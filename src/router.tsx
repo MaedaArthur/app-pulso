@@ -17,7 +17,7 @@ function PrivateRoute() {
 
 function AppLayout() {
   return (
-    <div className="max-w-md mx-auto min-h-screen pb-16">
+    <div className="max-w-md mx-auto min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))]">
       <Outlet />
       <TabBar />
     </div>

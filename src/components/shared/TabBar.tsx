@@ -9,7 +9,7 @@ const abas = [
 
 export default function TabBar() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex">
+    <nav className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex pb-[env(safe-area-inset-bottom)]">
       {abas.map(({ to, label, icon }) => (
         <NavLink
           key={to}
