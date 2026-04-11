@@ -1,0 +1,105 @@
+<h2>Onboarding — qual fluxo?</h2>
+<p class="subtitle">3 perguntas para personalizar o app. Como apresentar?</p>
+
+<div class="cards">
+
+  <!-- Opção A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <!-- Barra de progresso -->
+      <div style="display:flex; gap:4px; margin-bottom:16px;">
+        <div style="flex:1; height:3px; background:#6366f1; border-radius:2px;"></div>
+        <div style="flex:1; height:3px; background:#334155; border-radius:2px;"></div>
+        <div style="flex:1; height:3px; background:#334155; border-radius:2px;"></div>
+      </div>
+      <div style="color:#94a3b8; font-size:10px; margin-bottom:4px;">1 de 3</div>
+      <div style="color:#e2e8f0; font-size:15px; font-weight:700; margin-bottom:4px;">Como você recebe sua renda?</div>
+      <div style="color:#64748b; font-size:11px; margin-bottom:14px;">Pode ser mais de um jeito</div>
+      <!-- Opções de resposta -->
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;">
+        <div style="background:#6366f1; color:white; border-radius:20px; padding:6px 12px; font-size:11px; font-weight:600;">💼 Salário fixo</div>
+        <div style="background:#1e293b; color:#94a3b8; border-radius:20px; padding:6px 12px; font-size:11px; border:1px solid #334155;">🎨 Freela</div>
+        <div style="background:#1e293b; color:#94a3b8; border-radius:20px; padding:6px 12px; font-size:11px; border:1px solid #334155;">🛵 Plataforma</div>
+        <div style="background:#1e293b; color:#94a3b8; border-radius:20px; padding:6px 12px; font-size:11px; border:1px solid #334155;">🎓 Bolsa</div>
+        <div style="background:#1e293b; color:#94a3b8; border-radius:20px; padding:6px 12px; font-size:11px; border:1px solid #334155;">+ Outro</div>
+      </div>
+      <div style="background:#6366f1; border-radius:6px; padding:10px; text-align:center; color:white; font-size:12px; font-weight:600;">Próximo →</div>
+    </div>
+    <div class="card-body">
+      <h3>A — Uma pergunta por tela (wizard)</h3>
+      <p>Barra de progresso 1/3 → 2/3 → 3/3. Cada tela tem uma pergunta com chips de múltipla escolha. Foco total em cada resposta.</p>
+    </div>
+  </div>
+
+  <!-- Opção B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <div style="color:#e2e8f0; font-size:14px; font-weight:700; margin-bottom:2px;">Olá! Vamos configurar</div>
+      <div style="color:#64748b; font-size:11px; margin-bottom:14px;">Leva menos de 1 minuto</div>
+      <!-- P1 -->
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:8px;">
+        <div style="color:#94a3b8; font-size:10px; margin-bottom:6px;">Como você recebe sua renda?</div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px;">
+          <div style="background:#6366f133; color:#a5b4fc; border-radius:20px; padding:4px 10px; font-size:10px; border:1px solid #6366f1;">💼 Salário</div>
+          <div style="background:#1e293b; color:#64748b; border-radius:20px; padding:4px 10px; font-size:10px; border:1px solid #334155;">🎨 Freela</div>
+        </div>
+      </div>
+      <!-- P2 -->
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:8px;">
+        <div style="color:#94a3b8; font-size:10px; margin-bottom:6px;">Onde você guarda o dinheiro?</div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px;">
+          <div style="background:#6366f133; color:#a5b4fc; border-radius:20px; padding:4px 10px; font-size:10px; border:1px solid #6366f1;">🏦 Conta corrente</div>
+          <div style="background:#1e293b; color:#64748b; border-radius:20px; padding:4px 10px; font-size:10px; border:1px solid #334155;">💳 Poupança</div>
+        </div>
+      </div>
+      <!-- P3 -->
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:12px;">
+        <div style="color:#94a3b8; font-size:10px; margin-bottom:6px;">Qual é seu foco agora?</div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px;">
+          <div style="background:#1e293b; color:#64748b; border-radius:20px; padding:4px 10px; font-size:10px; border:1px solid #334155;">🛡 Reserva</div>
+          <div style="background:#1e293b; color:#64748b; border-radius:20px; padding:4px 10px; font-size:10px; border:1px solid #334155;">💳 Pagar dívida</div>
+        </div>
+      </div>
+      <div style="background:#6366f1; border-radius:6px; padding:10px; text-align:center; color:white; font-size:12px; font-weight:600;">Começar</div>
+    </div>
+    <div class="card-body">
+      <h3>B — Tudo em uma tela (scroll único)</h3>
+      <p>3 blocos de perguntas na mesma tela. O usuário responde tudo de uma vez e clica "Começar". Mais rápido, menos cerimônia.</p>
+    </div>
+  </div>
+
+  <!-- Opção C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <!-- Estilo conversa -->
+      <div style="margin-bottom:10px;">
+        <!-- mensagem do app -->
+        <div style="background:#1e293b; border-radius:12px 12px 12px 2px; padding:10px 12px; max-width:85%; margin-bottom:8px;">
+          <div style="color:#e2e8f0; font-size:11px;">Oi! Que tipo de renda você tem?</div>
+        </div>
+        <!-- resposta do usuário como chips -->
+        <div style="text-align:right; margin-bottom:10px;">
+          <div style="display:inline-flex; flex-wrap:wrap; gap:4px; justify-content:flex-end;">
+            <div style="background:#6366f1; color:white; border-radius:20px; padding:5px 10px; font-size:10px;">💼 Salário</div>
+            <div style="background:#6366f1; color:white; border-radius:20px; padding:5px 10px; font-size:10px;">🎨 Freela</div>
+          </div>
+        </div>
+        <!-- próxima mensagem -->
+        <div style="background:#1e293b; border-radius:12px 12px 12px 2px; padding:10px 12px; max-width:85%; margin-bottom:8px;">
+          <div style="color:#e2e8f0; font-size:11px;">Ótimo! Onde você guarda esse dinheiro?</div>
+        </div>
+        <!-- chips de resposta ainda não clicados -->
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px;">
+          <div style="background:#1e293b; color:#94a3b8; border-radius:20px; padding:5px 10px; font-size:10px; border:1px solid #334155;">🏦 Conta corrente</div>
+          <div style="background:#1e293b; color:#94a3b8; border-radius:20px; padding:5px 10px; font-size:10px; border:1px solid #334155;">💳 Poupança</div>
+          <div style="background:#1e293b; color:#94a3b8; border-radius:20px; padding:5px 10px; font-size:10px; border:1px solid #334155;">🧾 Nubank</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Conversa (chat-style)</h3>
+      <p>App "faz perguntas" em balões de chat. Usuário responde com chips. Nova pergunta aparece após cada resposta. Mais lúdico e humano.</p>
+    </div>
+  </div>
+
+</div>

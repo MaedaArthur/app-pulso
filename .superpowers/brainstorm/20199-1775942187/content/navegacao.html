@@ -1,0 +1,120 @@
+<h2>Qual estrutura de navegação para o app?</h2>
+<p class="subtitle">Essa escolha define como o usuário se move entre as telas principais do MVP. Mobile-first, tela principal = estado do mês.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="tab-bar" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f0f;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;color:#ccc">
+      <div style="background:#1a1a1a;border-radius:12px;overflow:hidden;max-width:220px;margin:0 auto">
+        <!-- Phone mockup -->
+        <div style="background:#111;padding:12px 16px;border-bottom:1px solid #333;color:#fff;font-size:13px;font-weight:600">Tô bem esse mês?</div>
+        <div style="padding:20px 16px">
+          <div style="background:#1a3a1a;border-radius:12px;padding:16px;text-align:center;margin-bottom:12px">
+            <div style="color:#4ade80;font-size:28px;font-weight:700">Verde ✓</div>
+            <div style="color:#999;font-size:11px;margin-top:4px">R$ 847 disponível</div>
+          </div>
+          <div style="color:#888;font-size:11px;text-align:center">conteúdo da tela atual</div>
+          <div style="height:60px"></div>
+        </div>
+        <!-- Bottom tab bar -->
+        <div style="background:#111;border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px 0">
+          <div style="text-align:center;color:#4ade80">
+            <div style="font-size:16px">◉</div>
+            <div style="font-size:9px;margin-top:2px">Início</div>
+          </div>
+          <div style="text-align:center;color:#666">
+            <div style="font-size:16px">↑</div>
+            <div style="font-size:9px;margin-top:2px">Entradas</div>
+          </div>
+          <div style="text-align:center;color:#666">
+            <div style="font-size:16px">↓</div>
+            <div style="font-size:9px;margin-top:2px">Gastos</div>
+          </div>
+          <div style="text-align:center;color:#666">
+            <div style="font-size:16px">☰</div>
+            <div style="font-size:9px;margin-top:2px">Mais</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Bottom Tab Bar</h3>
+      <p>4 abas fixas na parte inferior. Padrão iOS/Android. Usuário sempre sabe onde está e pode trocar de seção com 1 toque.</p>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Prós</h4><ul><li>UX familiar</li><li>Acesso direto a tudo</li><li>Fácil de implementar</li></ul></div>
+        <div class="cons"><h4>Contras</h4><ul><li>4 seções força MVP a ter mais telas definidas agora</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="home-hub" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f0f;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;color:#ccc">
+      <div style="background:#1a1a1a;border-radius:12px;overflow:hidden;max-width:220px;margin:0 auto">
+        <div style="background:#111;padding:12px 16px;border-bottom:1px solid #333;color:#fff;font-size:13px;font-weight:600">Tô bem esse mês?</div>
+        <div style="padding:16px">
+          <div style="background:#1a3a1a;border-radius:12px;padding:14px;text-align:center;margin-bottom:12px">
+            <div style="color:#4ade80;font-size:24px;font-weight:700">Verde ✓</div>
+            <div style="color:#999;font-size:10px;margin-top:3px">R$ 847 disponível</div>
+          </div>
+          <!-- Action cards as hub -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:#1e1e1e;border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:18px">💰</div>
+              <div style="color:#ccc;font-size:10px;margin-top:4px">Registrar entrada</div>
+            </div>
+            <div style="background:#1e1e1e;border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:18px">📄</div>
+              <div style="color:#ccc;font-size:10px;margin-top:4px">Importar CSV</div>
+            </div>
+            <div style="background:#1e1e1e;border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:18px">📊</div>
+              <div style="color:#ccc;font-size:10px;margin-top:4px">Ver gastos</div>
+            </div>
+            <div style="background:#1e1e1e;border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:18px">⚙️</div>
+              <div style="color:#ccc;font-size:10px;margin-top:4px">Configurações</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Home como hub</h3>
+      <p>Tela principal centraliza tudo. Sub-telas acessadas como drawer ou modal. Sem tab bar visível — o foco é na resposta "tô bem?".</p>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Prós</h4><ul><li>Foco total na tela principal</li><li>Mais flexível para crescer</li></ul></div>
+        <div class="cons"><h4>Contras</h4><ul><li>Menos familiar</li><li>Mais cliques para ações secundárias</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="scroll-unico" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f0f;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;color:#ccc">
+      <div style="background:#1a1a1a;border-radius:12px;overflow:hidden;max-width:220px;margin:0 auto">
+        <div style="background:#111;padding:12px 16px;border-bottom:1px solid #333;color:#fff;font-size:13px;font-weight:600">Renda Frag <span style="float:right;color:#666">☰</span></div>
+        <div style="padding:16px;max-height:200px;overflow:hidden">
+          <div style="background:#1a3a1a;border-radius:8px;padding:12px;margin-bottom:10px;text-align:center">
+            <div style="color:#4ade80;font-size:20px;font-weight:700">Verde ✓</div>
+          </div>
+          <div style="color:#888;font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:6px">Entradas do mês</div>
+          <div style="background:#1e1e1e;border-radius:6px;padding:8px;margin-bottom:6px;font-size:10px;color:#ccc">Estágio — R$ 1.200</div>
+          <div style="background:#1e1e1e;border-radius:6px;padding:8px;margin-bottom:10px;font-size:10px;color:#ccc">Freelance — R$ 400</div>
+          <div style="color:#888;font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:6px">Gastos recentes</div>
+          <div style="background:#1e1e1e;border-radius:6px;padding:8px;font-size:10px;color:#ccc">iFood — R$ 45</div>
+        </div>
+        <div style="text-align:center;color:#555;padding:6px 0;font-size:10px">↓ rolar para ver mais</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Scroll único / one-pager</h3>
+      <p>Tudo numa tela só que rola. Status, entradas recentes, gastos recentes. Ações como botões flutuantes ou inline.</p>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Prós</h4><ul><li>Contexto todo visível</li><li>Zero cliques para ver o estado geral</li></ul></div>
+        <div class="cons"><h4>Contras</h4><ul><li>Tela longa e densa</li><li>Pior para editar/adicionar itens</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px;font-size:13px">Clique para selecionar a opção que faz mais sentido. Pode discutir no terminal também.</p>

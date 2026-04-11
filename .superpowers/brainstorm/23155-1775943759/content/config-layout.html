@@ -1,0 +1,117 @@
+<h2>Tela Config — como organizar?</h2>
+<p class="subtitle">Dinheiro guardado, meta de poupança, perfil e conta. Qual estrutura faz mais sentido?</p>
+
+<div class="cards">
+
+  <!-- Opção A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <!-- Header perfil -->
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <div style="background:#6366f1; border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:700;">A</div>
+        <div>
+          <div style="color:#e2e8f0; font-size:13px; font-weight:600;">Arthur</div>
+          <div style="color:#64748b; font-size:10px;">arthur@email.com</div>
+        </div>
+      </div>
+      <!-- Seção dinheiro -->
+      <div style="color:#64748b; font-size:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Meu dinheiro</div>
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:10px;">
+        <div style="color:#94a3b8; font-size:10px; margin-bottom:4px;">Quanto tenho guardado</div>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="color:#4ade80; font-size:18px; font-weight:700;">R$ 1.800</div>
+          <div style="color:#6366f1; font-size:11px; border:1px solid #6366f1; border-radius:4px; padding:3px 8px;">editar</div>
+        </div>
+        <div style="color:#64748b; font-size:10px; margin-top:4px;">Atualiza o saldo disponível</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:14px;">
+        <div style="color:#94a3b8; font-size:10px; margin-bottom:4px;">Meta de poupança por mês</div>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="color:#e2e8f0; font-size:18px; font-weight:700;">R$ 300</div>
+          <div style="color:#6366f1; font-size:11px; border:1px solid #6366f1; border-radius:4px; padding:3px 8px;">editar</div>
+        </div>
+      </div>
+      <!-- Seção conta -->
+      <div style="color:#64748b; font-size:10px; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Conta</div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="color:#f87171; font-size:12px;">Sair</div>
+        <div style="color:#64748b; font-size:16px;">→</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Seções com valor em destaque</h3>
+      <p>Perfil no topo, seção "Meu dinheiro" com os dois valores em destaque e botão editar. Simples e direto.</p>
+    </div>
+  </div>
+
+  <!-- Opção B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <!-- Card grande dinheiro guardado -->
+      <div style="background: linear-gradient(135deg, #065f46, #047857); border-radius:8px; padding:14px; margin-bottom:10px;">
+        <div style="color:#6ee7b7; font-size:10px; margin-bottom:4px;">💰 QUANTO TENHO GUARDADO</div>
+        <div style="color:white; font-size:26px; font-weight:700; margin-bottom:2px;">R$ 1.800</div>
+        <div style="color:#6ee7b7; font-size:10px; margin-bottom:10px;">usado no cálculo do saldo disponível</div>
+        <div style="background:rgba(255,255,255,0.15); border-radius:6px; padding:8px; text-align:center; color:white; font-size:11px; font-weight:600;">Atualizar valor</div>
+      </div>
+      <!-- Card meta -->
+      <div style="background:#1e293b; border-radius:8px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="color:#94a3b8; font-size:10px; margin-bottom:2px;">Meta de poupança / mês</div>
+          <div style="color:#e2e8f0; font-size:16px; font-weight:700;">R$ 300</div>
+        </div>
+        <div style="color:#6366f1; font-size:11px; border:1px solid #6366f1; border-radius:4px; padding:4px 10px;">editar</div>
+      </div>
+      <!-- Perfil e conta compactos -->
+      <div style="background:#1e293b; border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="background:#6366f1; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;">A</div>
+          <div style="color:#e2e8f0; font-size:12px;">arthur@email.com</div>
+        </div>
+        <div style="color:#64748b; font-size:16px;">→</div>
+      </div>
+      <div style="background:#1e293b; border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="color:#f87171; font-size:12px;">Sair da conta</div>
+        <div style="color:#64748b; font-size:16px;">→</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Dinheiro guardado em destaque verde</h3>
+      <p>Card verde grande para "dinheiro guardado" (a info mais importante). Meta e perfil abaixo em cards secundários.</p>
+    </div>
+  </div>
+
+  <!-- Opção C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <!-- Form inline para dinheiro guardado -->
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:10px; border-left: 3px solid #4ade80;">
+        <div style="color:#4ade80; font-size:10px; font-weight:600; margin-bottom:6px;">DINHEIRO GUARDADO</div>
+        <div style="background:#0f172a; border-radius:4px; padding:10px; margin-bottom:6px; display:flex; align-items:center; gap:4px;">
+          <span style="color:#64748b; font-size:13px;">R$</span>
+          <span style="color:#4ade80; font-size:20px; font-weight:700; border-bottom: 1px solid #4ade80;">1.800</span>
+          <span style="color:#64748b; font-size:12px; margin-left:4px;">✏️</span>
+        </div>
+        <div style="color:#64748b; font-size:10px;">Toca para editar. Afeta seu saldo disponível.</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:10px; border-left: 3px solid #6366f1;">
+        <div style="color:#a5b4fc; font-size:10px; font-weight:600; margin-bottom:6px;">META DE POUPANÇA / MÊS</div>
+        <div style="background:#0f172a; border-radius:4px; padding:10px; margin-bottom:6px; display:flex; align-items:center; gap:4px;">
+          <span style="color:#64748b; font-size:13px;">R$</span>
+          <span style="color:#e2e8f0; font-size:20px; font-weight:700; border-bottom: 1px solid #334155;">300</span>
+          <span style="color:#64748b; font-size:12px; margin-left:4px;">✏️</span>
+        </div>
+        <div style="color:#64748b; font-size:10px;">Reservado antes de calcular o disponível.</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="color:#94a3b8; font-size:12px;">Perfil e conta</div>
+        <div style="color:#64748b; font-size:16px;">→</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Campos editáveis inline com borda colorida</h3>
+      <p>Cada campo editável diretamente em tela, sem modal. Borda colorida sinaliza o que pode ser tocado. Conta agrupada em item único no rodapé.</p>
+    </div>
+  </div>
+
+</div>

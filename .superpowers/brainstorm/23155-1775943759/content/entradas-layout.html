@@ -1,0 +1,130 @@
+<h2>Tela Entradas — como organizar?</h2>
+<p class="subtitle">Escolha o layout que faz mais sentido para registrar e ver suas entradas do mês</p>
+
+<div class="cards">
+
+  <!-- Opção A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:8px; color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Entradas de abril</div>
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:8px; text-align:center;">
+        <div style="color:#4ade80; font-size:22px; font-weight:bold;">R$ 3.200</div>
+        <div style="color:#64748b; font-size:11px;">total recebido no mês</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="color:#e2e8f0; font-size:12px;">Salário</div>
+          <div style="color:#64748b; font-size:11px;">01/04</div>
+        </div>
+        <div style="color:#4ade80; font-size:13px; font-weight:bold;">R$ 2.500</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="color:#e2e8f0; font-size:12px;">Freela design</div>
+          <div style="color:#64748b; font-size:11px;">08/04</div>
+        </div>
+        <div style="color:#4ade80; font-size:13px; font-weight:bold;">R$ 700</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="color:#e2e8f0; font-size:12px;">iFood bônus</div>
+          <div style="color:#64748b; font-size:11px;">10/04</div>
+        </div>
+        <div style="color:#4ade80; font-size:13px; font-weight:bold;">R$ 80</div>
+      </div>
+      <!-- FAB -->
+      <div style="text-align:right;">
+        <div style="display:inline-block; background:#6366f1; color:white; border-radius:50%; width:36px; height:36px; line-height:36px; text-align:center; font-size:22px; font-weight:bold; box-shadow:0 4px 12px rgba(99,102,241,0.5);">+</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Lista + FAB</h3>
+      <p>Lista do mês com total no topo. Botão flutuante (+) abre um modal para adicionar entrada. Simples e focado.</p>
+    </div>
+  </div>
+
+  <!-- Opção B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:8px; color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Entradas de abril</div>
+      <!-- Form inline no topo -->
+      <div style="background:#1e293b; border-radius:6px; padding:12px; margin-bottom:10px; border: 1px solid #6366f1;">
+        <div style="color:#a5b4fc; font-size:11px; margin-bottom:8px;">+ Nova entrada</div>
+        <div style="background:#0f172a; border-radius:4px; padding:8px; margin-bottom:6px; color:#4ade80; font-size:14px; font-weight:bold;">R$ ____</div>
+        <div style="display:flex; gap:6px; margin-bottom:6px;">
+          <div style="flex:1; background:#0f172a; border-radius:4px; padding:6px; color:#64748b; font-size:11px;">Fonte (ex: salário)</div>
+          <div style="width:60px; background:#0f172a; border-radius:4px; padding:6px; color:#64748b; font-size:11px;">Data</div>
+        </div>
+        <div style="background:#6366f1; border-radius:4px; padding:6px; text-align:center; color:white; font-size:11px;">Salvar</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="color:#e2e8f0; font-size:12px;">Salário</div>
+          <div style="color:#64748b; font-size:11px;">01/04</div>
+        </div>
+        <div style="color:#4ade80; font-size:13px; font-weight:bold;">R$ 2.500</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="color:#e2e8f0; font-size:12px;">Freela design</div>
+          <div style="color:#64748b; font-size:11px;">08/04</div>
+        </div>
+        <div style="color:#4ade80; font-size:13px; font-weight:bold;">R$ 700</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Formulário inline no topo</h3>
+      <p>Formulário de adição sempre visível no topo da tela, antes da lista. Zero cliques para adicionar — tudo em um scroll.</p>
+    </div>
+  </div>
+
+  <!-- Opção C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0f172a; border-radius: 8px; font-family: monospace; font-size: 12px;">
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:8px; color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:1px;">Entradas de abril</div>
+      <!-- Total resumido -->
+      <div style="display:flex; gap:6px; margin-bottom:10px;">
+        <div style="flex:1; background:#1e293b; border-radius:6px; padding:10px; text-align:center;">
+          <div style="color:#4ade80; font-size:16px; font-weight:bold;">R$ 3.200</div>
+          <div style="color:#64748b; font-size:10px;">total recebido</div>
+        </div>
+        <div style="flex:1; background:#1e293b; border-radius:6px; padding:10px; text-align:center;">
+          <div style="color:#e2e8f0; font-size:16px; font-weight:bold;">3</div>
+          <div style="color:#64748b; font-size:10px;">entradas</div>
+        </div>
+      </div>
+      <!-- Lista com swipe hint -->
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="background:#4ade8033; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:14px;">💼</div>
+          <div>
+            <div style="color:#e2e8f0; font-size:12px;">Salário</div>
+            <div style="color:#64748b; font-size:10px;">01/04 · recorrente</div>
+          </div>
+        </div>
+        <div style="color:#4ade80; font-size:13px; font-weight:bold;">R$ 2.500</div>
+      </div>
+      <div style="background:#1e293b; border-radius:6px; padding:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="background:#a78bfa33; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:14px;">🎨</div>
+          <div>
+            <div style="color:#e2e8f0; font-size:12px;">Freela design</div>
+            <div style="color:#64748b; font-size:10px;">08/04 · eventual</div>
+          </div>
+        </div>
+        <div style="color:#4ade80; font-size:13px; font-weight:bold;">R$ 700</div>
+      </div>
+      <!-- FAB com label -->
+      <div style="text-align:right; margin-top:8px;">
+        <div style="display:inline-flex; align-items:center; gap:6px; background:#6366f1; color:white; border-radius:20px; padding:7px 14px; font-size:12px; font-weight:600; box-shadow:0 4px 12px rgba(99,102,241,0.5);">
+          <span>+</span><span>Adicionar</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Cards com ícone + FAB com label</h3>
+      <p>Lista com ícone por tipo de fonte (salário, freela, plataforma) e tag "recorrente/eventual". Botão flutuante com label "Adicionar" em vez de só "+".</p>
+    </div>
+  </div>
+
+</div>

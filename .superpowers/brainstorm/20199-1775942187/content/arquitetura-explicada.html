@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitetura explicada</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0d0d; color: #ccc; font-family: -apple-system, sans-serif; padding: 32px 24px; max-width: 860px; margin: 0 auto; }
+  h1 { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 40px; }
+
+  .layer { background: #141414; border-radius: 14px; padding: 20px 24px; margin-bottom: 12px; border: 1px solid #222; position: relative; }
+  .layer-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+  .layer-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .layer-desc { font-size: 13px; color: #888; line-height: 1.6; }
+  .layer-analogy { background: #1a1a1a; border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 12px; color: #aaa; border-left: 3px solid #333; }
+  .layer-analogy strong { color: #ccc; }
+
+  .arrow { text-align: center; color: #333; font-size: 20px; margin: -4px 0; position: relative; z-index: 1; }
+  .arrow-label { font-size: 11px; color: #555; display: block; margin-top: 2px; }
+
+  /* Layer colors */
+  .l-user .layer-label { color: #60a5fa; }
+  .l-user { border-color: #1e3a5f; }
+  .l-react .layer-label { color: #a78bfa; }
+  .l-react { border-color: #2d1f4e; }
+  .l-query .layer-label { color: #fb923c; }
+  .l-query { border-color: #3d2010; }
+  .l-hooks .layer-label { color: #4ade80; }
+  .l-hooks { border-color: #1a3a1a; }
+  .l-finance .layer-label { color: #f472b6; }
+  .l-finance { border-color: #3d1a2e; }
+  .l-supabase .layer-label { color: #34d399; }
+  .l-supabase { border-color: #0d3328; }
+
+  .tag { display: inline-block; background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 999px; padding: 3px 10px; font-size: 11px; color: #888; margin: 3px 3px 0 0; }
+
+  .example-flow { background: #111; border-radius: 12px; padding: 20px 24px; margin-top: 40px; border: 1px solid #1e1e1e; }
+  .example-flow h2 { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 20px; }
+  .step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+  .step-num { background: #1e1e1e; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; margin-top: 1px; }
+  .step-content { flex: 1; }
+  .step-action { font-size: 13px; color: #fff; font-weight: 500; margin-bottom: 3px; }
+  .step-detail { font-size: 12px; color: #666; line-height: 1.5; }
+  .step-layer { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+
+  .cache-box { background: #1a1a1a; border-radius: 12px; padding: 20px 24px; margin-top: 40px; border: 1px solid #fb923c33; }
+  .cache-box h2 { font-size: 16px; font-weight: 600; color: #fb923c; margin-bottom: 14px; }
+  .cache-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .cache-col { background: #111; border-radius: 8px; padding: 14px; }
+  .cache-col h4 { font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+  .cache-col ul { list-style: none; padding: 0; }
+  .cache-col li { font-size: 12px; color: #888; margin-bottom: 6px; padding-left: 16px; position: relative; line-height: 1.4; }
+  .cache-col li::before { content: '·'; position: absolute; left: 4px; color: #444; }
+</style>
+</head>
+<body>
+
+<h1>Como o app funciona por dentro</h1>
+<p class="subtitle">Cada camada tem uma função específica. Você escreve menos código porque cada lib resolve um problema bem definido.</p>
+
+<!-- CAMADA 1: Usuário / Telas -->
+<div class="layer l-user">
+  <div class="layer-label">Camada 1 — O que o usuário vê</div>
+  <div class="layer-title">Telas (React Components)</div>
+  <div class="layer-desc">São os arquivos <code>.tsx</code> — o que aparece na tela. A home, a tela de entradas, o formulário de CSV. Eles não sabem nada sobre banco de dados. Só recebem dados e mostram.</div>
+  <div class="layer-analogy"><strong>Analogia:</strong> o garçom que traz o prato. Ele não cozinha, não faz o pedido para o fornecedor — só entrega o que recebe.</div>
+  <div style="margin-top:12px">
+    <span class="tag">Home.tsx</span>
+    <span class="tag">Entradas.tsx</span>
+    <span class="tag">Gastos.tsx</span>
+    <span class="tag">Onboarding.tsx</span>
+  </div>
+</div>
+
+<div class="arrow">↕<span class="arrow-label">chama hooks para pedir dados</span></div>
+
+<!-- CAMADA 2: Hooks -->
+<div class="layer l-hooks">
+  <div class="layer-label">Camada 2 — Pontes de dados (Custom Hooks)</div>
+  <div class="layer-title">useEntradas · useGastos · useSaldo</div>
+  <div class="layer-desc">Cada hook é responsável por um domínio. <code>useGastos()</code> sabe buscar os gastos do mês atual, filtrar por categoria, somar. A tela só chama o hook e recebe o resultado — não precisa saber de onde vem.</div>
+  <div class="layer-analogy"><strong>Analogia:</strong> o garçom vai até a cozinha para buscar o prato. A cozinha (TanStack Query) decide se vai realmente cozinhar ou se já tem o prato pronto.</div>
+  <div style="margin-top:12px">
+    <span class="tag">useEntradas.ts</span>
+    <span class="tag">useGastos.ts</span>
+    <span class="tag">useSaldo.ts</span>
+    <span class="tag">useOnboarding.ts</span>
+  </div>
+</div>
+
+<div class="arrow">↕<span class="arrow-label">hooks usam TanStack Query para buscar/salvar</span></div>
+
+<!-- CAMADA 3: TanStack Query (cache) -->
+<div class="layer l-query">
+  <div class="layer-label">Camada 3 — Memória inteligente (TanStack Query)</div>
+  <div class="layer-title">Cache + sincronização automática</div>
+  <div class="layer-desc">
+    O TanStack Query é a "memória de curto prazo" do app. Quando você pede os gastos do mês, ele verifica: <em>"já tenho isso em memória e é recente?"</em> Se sim, responde na hora — sem ir ao banco. Se não, vai buscar no Supabase, guarda o resultado, e na próxima vez responde instantâneo.<br><br>
+    Também cuida de estados como "está carregando" e "deu erro" — sem você escrever isso manualmente.
+  </div>
+  <div class="layer-analogy"><strong>Cache em palavras simples:</strong> você pergunta ao Google Maps o caminho para casa. Ele te responde em 0,1s porque já calculou antes. Se a rua fecha, ele invalida o cache e recalcula. É exatamente isso — guardar respostas para não precisar recalcular toda hora.</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin: -4px 0 12px">
+  <div class="arrow" style="text-align:right;padding-right:40px">↙<span class="arrow-label">busca dados do banco</span></div>
+  <div class="arrow" style="text-align:left;padding-left:40px">↘<span class="arrow-label">aplica lógica financeira</span></div>
+</div>
+
+<!-- CAMADA 4A: Supabase -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  <div class="layer l-supabase">
+    <div class="layer-label">Camada 4A — Banco de dados</div>
+    <div class="layer-title">Supabase</div>
+    <div class="layer-desc">O banco de dados real. Guarda entradas, gastos, perfil do usuário, eventos de analytics. Também cuida do login (auth).</div>
+    <div class="layer-analogy" style="margin-top:10px"><strong>Analogia:</strong> o depósito do restaurante. Tudo que existe fica aqui.</div>
+    <div style="margin-top:10px">
+      <span class="tag">tabela: entradas</span>
+      <span class="tag">tabela: gastos</span>
+      <span class="tag">tabela: perfil</span>
+      <span class="tag">tabela: events</span>
+    </div>
+  </div>
+
+  <div class="layer l-finance">
+    <div class="layer-label">Camada 4B — Cálculos puros</div>
+    <div class="layer-title">finance.ts</div>
+    <div class="layer-desc">Funções matemáticas puras. Recebe números, devolve números. Não sabe o que é React, não sabe o que é banco de dados. Só calcula.</div>
+    <div class="layer-analogy" style="margin-top:10px"><strong>Vantagem:</strong> é testável de forma isolada. Se a fórmula do saldo estiver errada, você descobre no teste antes de ver na tela.</div>
+    <div style="margin-top:10px">
+      <span class="tag">calcularSaldo()</span>
+      <span class="tag">estadoDoMes()</span>
+      <span class="tag">ritmoDeMes()</span>
+    </div>
+  </div>
+</div>
+
+<!-- EXEMPLO DE FLUXO REAL -->
+<div class="example-flow">
+  <h2>O que acontece quando você abre o app?</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <div class="step-layer" style="color:#60a5fa">Tela (React)</div>
+      <div class="step-action">Home.tsx renderiza</div>
+      <div class="step-detail">A tela aparece. Imediatamente chama <code>useSaldo()</code> e <code>useGastos()</code>.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <div class="step-layer" style="color:#fb923c">TanStack Query (cache)</div>
+      <div class="step-action">Tem cache? → Mostra na hora. Não tem? → Mostra skeleton</div>
+      <div class="step-detail">Se você já abriu o app nos últimos 5 min, os dados aparecem instantaneamente do cache. Se é a primeira vez, mostra loading enquanto vai buscar.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <div class="step-layer" style="color:#34d399">Supabase</div>
+      <div class="step-action">Busca entradas e gastos do mês atual do banco</div>
+      <div class="step-detail">Uma query: <em>"me dê todos os gastos de Arthur em abril de 2026"</em>. O Supabase responde com a lista.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <div class="step-layer" style="color:#f472b6">finance.ts</div>
+      <div class="step-action">Calcula saldo, estado do mês, ritmo</div>
+      <div class="step-detail"><code>calcularSaldo(dinheiro_guardado, gastos, meta)</code> → R$ 847. <code>estadoDoMes(847, media_renda)</code> → "verde".</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <div class="step-layer" style="color:#60a5fa">Tela (React)</div>
+      <div class="step-action">Home atualiza com os dados reais</div>
+      <div class="step-detail">O TanStack Query avisa a tela que os dados chegaram. A tela re-renderiza mostrando "Verde ✓ R$ 847". O cache guarda esse resultado.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CACHE EXPLICADO -->
+<div class="cache-box">
+  <h2>⚡ Cache — por que isso importa?</h2>
+  <p style="font-size:13px;color:#aaa;line-height:1.6">Sem cache, cada vez que você muda de aba o app vai ao banco de dados buscar os mesmos dados de novo. Com cache, ele guarda o resultado e reutiliza. A experiência fica instantânea — sem loading toda hora.</p>
+  <div class="cache-comparison">
+    <div class="cache-col">
+      <h4 style="color:#f87171">Sem cache</h4>
+      <ul>
+        <li>Abre o app → busca no banco (500ms)</li>
+        <li>Vai para Entradas → busca de novo (500ms)</li>
+        <li>Volta para Home → busca de novo (500ms)</li>
+        <li>Sem internet → tela vazia</li>
+      </ul>
+    </div>
+    <div class="cache-col">
+      <h4 style="color:#4ade80">Com cache (TanStack Query)</h4>
+      <ul>
+        <li>Abre o app → busca no banco (500ms)</li>
+        <li>Vai para Entradas → instante (memória)</li>
+        <li>Volta para Home → instante (memória)</li>
+        <li>Sem internet → mostra último dado</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
