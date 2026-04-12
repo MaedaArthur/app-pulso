@@ -11,6 +11,7 @@ export interface Perfil {
   tipo_reserva: 'buffer' | 'reserva' | null
   onboarding_completo: boolean
   dica_csv_vista: boolean
+  tutorial_visto: boolean
   created_at: string
 }
 
