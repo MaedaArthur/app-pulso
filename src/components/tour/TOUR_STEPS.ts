@@ -10,7 +10,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'saldo',
     rota: '/',
     titulo: 'Saldo disponível e estado do mês',
-    texto: 'Esse número já desconta seus gastos fixos. O estado fica verde, amarelo ou vermelho conforme você gasta — é sua bússola do mês.',
+    texto: 'Esse número já desconta seus gastos fixos. O estado fica verde, amarelo ou vermelho conforme você gasta. É sua bússola do mês.',
   },
   {
     id: 'meta',
@@ -46,7 +46,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'nova-entrada',
     rota: '/entradas',
     titulo: 'Registre renda assim que receber',
-    texto: 'Cada vez que entrar dinheiro — freela, salário, bolsa — registre aqui na hora. Quanto mais atualizado, mais preciso é o seu saldo.',
+    texto: 'Cada vez que entrar dinheiro (freela, salário, bolsa), registre aqui na hora. Quanto mais atualizado, mais preciso é o seu saldo.',
   },
   {
     id: 'importar-csv',
@@ -64,6 +64,6 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'config-campos',
     rota: '/config',
     titulo: 'Mantenha seus números atualizados',
-    texto: 'Aqui ficam renda estimada, gastos fixos e meta de poupança. Se algo mudar na sua vida financeira, atualize aqui — o app recalcula tudo automaticamente.',
+    texto: 'Aqui ficam renda estimada, gastos fixos e meta de poupança. Se algo mudar na sua vida financeira, atualize aqui. O app recalcula tudo automaticamente.',
   },
 ]

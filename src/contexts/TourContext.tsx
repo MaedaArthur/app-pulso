@@ -7,11 +7,13 @@ import { TOUR_STEPS } from '../components/tour/TOUR_STEPS'
 interface TourContextValue {
   intro: boolean
   ativo: boolean
+  feito: boolean
   passoAtual: number
   iniciar: () => void
   confirmarTour: () => void
   avancar: () => void
   pular: () => void
+  finalizar: () => void
 }
 
 const TourContext = createContext<TourContextValue | null>(null)
@@ -19,6 +21,7 @@ const TourContext = createContext<TourContextValue | null>(null)
 export function TourProvider({ children }: { children: React.ReactNode }) {
   const [intro, setIntro] = useState(false)
   const [ativo, setAtivo] = useState(false)
+  const [feito, setFeito] = useState(false)
   const [passoAtual, setPassoAtual] = useState(0)
   const navigate = useNavigate()
   const { mutate: atualizarPerfil } = useAtualizarPerfil()
@@ -36,13 +39,20 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const concluir = useCallback(() => {
     setIntro(false)
     setAtivo(false)
+    setFeito(false)
     atualizarPerfil({ tutorial_visto: true })
   }, [atualizarPerfil])
+
+  const finalizar = useCallback(() => {
+    navigate('/')
+    concluir()
+  }, [navigate, concluir])
 
   const avancar = useCallback(() => {
     const proximo = passoAtual + 1
     if (proximo >= TOUR_STEPS.length) {
-      concluir()
+      setAtivo(false)
+      setFeito(true)
       return
     }
     const stepAtual = TOUR_STEPS[passoAtual]
@@ -58,7 +68,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   }, [concluir])
 
   return (
-    <TourContext.Provider value={{ intro, ativo, passoAtual, iniciar, confirmarTour, avancar, pular }}>
+    <TourContext.Provider value={{ intro, ativo, feito, passoAtual, iniciar, confirmarTour, avancar, pular, finalizar }}>
       {children}
     </TourContext.Provider>
   )

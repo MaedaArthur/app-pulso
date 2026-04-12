@@ -31,7 +31,7 @@ function calcTooltipPos(rect: TargetRect): { top: number; left: number } {
 }
 
 export default function TourOverlay() {
-  const { intro, ativo, passoAtual, confirmarTour, avancar, pular } = useTour()
+  const { intro, ativo, feito, passoAtual, confirmarTour, avancar, pular, finalizar } = useTour()
   const [rect, setRect] = useState<TargetRect | null>(null)
 
   // Encontra o elemento e posiciona o anel ao mudar de passo
@@ -93,7 +93,7 @@ export default function TourOverlay() {
   if (intro) {
     return createPortal(
       <div className="fixed inset-0 bg-black/75 z-[9998] flex items-center justify-center p-6">
-        <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
+        <div key="intro" className="tour-in bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
           <div className="text-4xl mb-4">🗺️</div>
           <h2 className="text-base font-bold text-white mb-2">Quer um tour rápido?</h2>
           <p className="text-xs text-slate-400 leading-relaxed mb-6">
@@ -110,6 +110,32 @@ export default function TourOverlay() {
             className="text-xs text-slate-500 hover:text-slate-400 transition-colors"
           >
             Pular tour
+          </button>
+        </div>
+      </div>,
+      document.body,
+    )
+  }
+
+  // Tela de conclusão
+  if (feito) {
+    return createPortal(
+      <div className="fixed inset-0 bg-black/75 z-[9998] flex items-center justify-center p-6">
+        <div key="feito" className="tour-in bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
+          <div className="text-4xl mb-4">🎉</div>
+          <h2 className="text-base font-bold text-white mb-2">Tour concluído!</h2>
+          <p className="text-xs text-slate-400 leading-relaxed mb-2">
+            Agora você conhece o app. Duas dicas para manter tudo em dia:
+          </p>
+          <div className="bg-slate-800 rounded-xl p-3 text-left mb-6 space-y-2">
+            <p className="text-xs text-slate-300">📥 Importe o CSV do Nubank toda semana</p>
+            <p className="text-xs text-slate-300">✏️ Registre entradas assim que receber</p>
+          </div>
+          <button
+            onClick={finalizar}
+            className="w-full bg-indigo-600 hover:bg-indigo-500 rounded-xl py-3 text-sm font-semibold text-white transition-colors"
+          >
+            Começar a usar →
           </button>
         </div>
       </div>,
@@ -147,7 +173,11 @@ export default function TourOverlay() {
   return createPortal(
     <>
       <div style={ringStyle} />
-      <div style={tooltipStyle} className="bg-slate-900 border border-indigo-500/40 rounded-2xl p-4 shadow-xl">
+      <div
+        key={passoAtual}
+        style={tooltipStyle}
+        className="tour-in bg-slate-900 border border-indigo-500/40 rounded-2xl p-4 shadow-xl"
+      >
         <div className="flex items-start justify-between gap-2 mb-2">
           <p className="text-xs text-indigo-400 font-semibold">
             Passo {passoAtual + 1} de {TOUR_STEPS.length}
@@ -167,7 +197,7 @@ export default function TourOverlay() {
           onClick={avancar}
           className="w-full bg-indigo-600 hover:bg-indigo-500 rounded-xl py-2.5 text-sm font-semibold text-white transition-colors"
         >
-          {isUltimo ? 'Concluir' : 'Próximo →'}
+          {isUltimo ? 'Concluir →' : 'Próximo →'}
         </button>
       </div>
     </>,
