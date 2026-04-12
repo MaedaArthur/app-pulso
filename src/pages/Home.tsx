@@ -28,6 +28,8 @@ export default function Home() {
     )
   }
 
+  const semDados = (perfil?.dinheiro_guardado ?? 0) === 0 && totalEntradas === 0 && totalGastos === 0
+
   return (
     <div className="p-4">
       <HeroStatus
@@ -35,6 +37,7 @@ export default function Home() {
         saldoReal={saldoReal}
         estado={estado}
         gastosDesatualizados={gastosDesatualizados}
+        semDados={semDados}
       />
 
       <RitmoDoMes

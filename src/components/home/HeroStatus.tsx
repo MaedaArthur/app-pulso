@@ -19,11 +19,24 @@ interface Props {
   saldoReal: number
   estado: EstadoMes
   gastosDesatualizados: boolean
+  semDados: boolean
 }
 
-export default function HeroStatus({ nome, saldoReal, estado, gastosDesatualizados }: Props) {
+export default function HeroStatus({ nome, saldoReal, estado, gastosDesatualizados, semDados }: Props) {
   const navigate = useNavigate()
   const primeiroNome = nome?.split(' ')[0] ?? 'você'
+
+  if (semDados) {
+    return (
+      <div className="rounded-2xl bg-slate-900 p-5 mb-4">
+        <p className="text-sm text-slate-400 mb-3">Olá, {primeiroNome} 👋</p>
+        <p className="text-sm font-medium text-slate-300 mb-1">Configure seu saldo para começar</p>
+        <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+          Vá em Config e informe quanto você tem guardado. Depois registre suas entradas e importe seus gastos do Nubank.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className={`rounded-2xl bg-gradient-to-br ${GRADIENTES[estado]} p-5 mb-4`}>

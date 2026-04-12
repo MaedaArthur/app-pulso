@@ -25,7 +25,7 @@ const FOCO = [
 
 const COMO_RECEBE = ['💼 Salário fixo', '🎨 Freela', '🛵 Plataforma', '🎓 Bolsa', '+ Outro']
 
-type Passo = 'boas-vindas' | 'p1' | 'p2' | 'p3' | 'p4' | 'p5' | 'dica'
+type Passo = 'splash' | 'boas-vindas' | 'p1' | 'p2' | 'p3' | 'p4' | 'p5' | 'dica'
 
 interface Mensagem {
   de: 'app' | 'usuario'
@@ -59,10 +59,8 @@ function DigitandoIndicator() {
 }
 
 export default function OnboardingChat() {
-  const [passo, setPasso] = useState<Passo>('boas-vindas')
-  const [mensagens, setMensagens] = useState<Mensagem[]>([
-    { de: 'app', texto: 'Olá! Vamos configurar o app rapidinho. 👋', subtexto: 'Leva menos de 1 minuto.' },
-  ])
+  const [passo, setPasso] = useState<Passo>('splash')
+  const [mensagens, setMensagens] = useState<Mensagem[]>([])
   const [digitando, setDigitando] = useState(false)
   const [bloqueado, setBloqueado] = useState(false)
   const [respostas, setRespostas] = useState<Respostas>({
@@ -218,6 +216,33 @@ export default function OnboardingChat() {
     })
   }
 
+  if (passo === 'splash') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-8 max-w-md mx-auto text-center">
+        <div className="text-5xl mb-6">💸</div>
+        <h1 className="text-2xl font-bold mb-2">Bem-vindo ao Renda Frag</h1>
+        <p className="text-slate-400 text-sm mb-2">
+          Antes de começar, vou te fazer algumas perguntinhas rápidas para personalizar o app pra você.
+        </p>
+        <p className="text-slate-600 text-xs mb-10">Leva menos de 1 minuto.</p>
+        <button
+          onClick={() => {
+            setMensagens([{ de: 'app', texto: 'Olá! Vamos configurar o app rapidinho. 👋' }])
+            setBloqueado(true)
+            setPasso('boas-vindas')
+            enviarMensagemApp('Que tipo de renda você tem? 👋', 'Pode marcar mais de um', 1600).then(() => {
+              setPasso('p1')
+              setBloqueado(false)
+            })
+          }}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 rounded-xl py-3 font-semibold text-sm transition-colors"
+        >
+          Vamos lá →
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col p-4 max-w-md mx-auto">
       <div className="flex-1 space-y-4 py-4">
@@ -249,22 +274,6 @@ export default function OnboardingChat() {
       </div>
 
       <div className="pb-6 space-y-3">
-        {passo === 'boas-vindas' && (
-          <button
-            onClick={() => {
-              setBloqueado(true)
-              enviarMensagemApp('Que tipo de renda você tem? 👋', 'Pode marcar mais de um', 1600).then(() => {
-                setPasso('p1')
-                setBloqueado(false)
-              })
-            }}
-            disabled={bloqueado}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 rounded-xl py-3 font-semibold text-sm transition-colors"
-          >
-            Vamos lá →
-          </button>
-        )}
-
         {passo === 'p1' && (
           <>
             <div className="flex flex-wrap gap-2">
