@@ -45,7 +45,7 @@ export default function ReservaCard({ saude, perfil }: Props) {
   }
 
   return (
-    <div className="bg-slate-900 rounded-2xl p-4 mb-4">
+    <div data-tour="reserva" className="bg-slate-900 rounded-2xl p-4 mb-4">
       <div className="flex items-center justify-between mb-1">
         <p className="text-sm font-semibold">🔒 Reserva</p>
 

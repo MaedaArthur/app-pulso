@@ -35,7 +35,7 @@ export default function CategoriasGastos({ gastosPorCategoria, totalGastos }: Pr
 
   if (gastosPorCategoria.length === 0) {
     return (
-      <div className="bg-slate-900 rounded-2xl p-4 mb-4">
+      <div data-tour="categorias" className="bg-slate-900 rounded-2xl p-4 mb-4">
         <p className="text-sm font-semibold mb-2">Onde foi o dinheiro?</p>
         <p className="text-xs text-slate-500">
           Importe um CSV do Nubank na aba Gastos para ver suas categorias.
@@ -50,7 +50,7 @@ export default function CategoriasGastos({ gastosPorCategoria, totalGastos }: Pr
   const porcentOutros = totalGastos > 0 ? Math.round((totalOutros / totalGastos) * 100) : 0
 
   return (
-    <div className="bg-slate-900 rounded-2xl p-4 mb-4">
+    <div data-tour="categorias" className="bg-slate-900 rounded-2xl p-4 mb-4">
       <p className="text-sm font-semibold mb-4">Onde foi o dinheiro?</p>
 
       <div className="space-y-3">

@@ -24,7 +24,7 @@ export default function RitmoDoMes({ ritmo, estado, totalGastos, diasPassados, d
   const porcentDias = Math.round(ritmo.porcentagemDias * 100)
 
   return (
-    <div className="bg-slate-900 rounded-2xl p-4 mb-4">
+    <div data-tour="ritmo" className="bg-slate-900 rounded-2xl p-4 mb-4">
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-semibold">Ritmo do mês</p>
         <span className={`text-xs font-medium px-2 py-1 rounded-full ${

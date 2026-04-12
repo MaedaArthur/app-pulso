@@ -11,7 +11,7 @@ export default function MetaCard({ projecao }: Props) {
   const atingida = percentual >= 1
 
   return (
-    <div className="bg-slate-900 rounded-2xl p-4 mb-4">
+    <div data-tour="meta" className="bg-slate-900 rounded-2xl p-4 mb-4">
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-semibold">🎯 Meta de poupança</p>
         <span className={`text-xs font-medium px-2 py-1 rounded-full ${

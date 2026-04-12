@@ -40,7 +40,7 @@ export default function HeroStatus({ nome, saldoReal, estado, gastosDesatualizad
   }
 
   return (
-    <div className={`rounded-2xl bg-gradient-to-br ${GRADIENTES[estado]} p-5 mb-4`}>
+    <div data-tour="saldo" className={`rounded-2xl bg-gradient-to-br ${GRADIENTES[estado]} p-5 mb-4`}>
       <p className="text-sm text-white/70 mb-3">Olá, {primeiroNome} 👋</p>
 
       <p className="text-sm font-medium text-white/80 mb-1">{LABELS[estado]}</p>

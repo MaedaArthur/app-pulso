@@ -18,7 +18,7 @@ export default function ResumoEntradaGasto({
   const navigate = useNavigate()
 
   return (
-    <div className="grid grid-cols-2 gap-3 mb-4">
+    <div data-tour="resumo" className="grid grid-cols-2 gap-3 mb-4">
       <div className="bg-slate-900 rounded-2xl p-4">
         <p className="text-xs text-slate-500 mb-1">↑ Entrou</p>
         <p className="text-lg font-bold text-emerald-400 mb-3">{formatBRL(totalEntradas)}</p>
