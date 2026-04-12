@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import { usePerfil } from './hooks/usePerfil'
+import { useOnlineStatus } from './hooks/useOnlineStatus'
 import TabBar from './components/shared/TabBar'
 import { TourProvider } from './contexts/TourContext'
 import TourOverlay from './components/tour/TourOverlay'
@@ -42,9 +43,16 @@ function OnboardingGuard() {
 }
 
 function AppLayout() {
+  const isOnline = useOnlineStatus()
+
   return (
     <TourProvider>
       <div className="max-w-md mx-auto min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))]">
+        {!isOnline && (
+          <div className="bg-slate-800 text-slate-400 text-xs text-center py-2 px-4">
+            Sem conexão — visualização apenas
+          </div>
+        )}
         <Outlet />
         <TabBar />
       </div>
