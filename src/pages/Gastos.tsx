@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useGastos } from '../hooks/useGastos'
 import { useImportarCsv, parseFile } from '../hooks/useImportarCsv'
+import { useOnlineStatus } from '../hooks/useOnlineStatus'
 import type { PreviewImport } from '../hooks/useImportarCsv'
 import type { GastosPorCategoria } from '../hooks/useSaldo'
 import type { Categoria } from '../types'
@@ -26,6 +27,7 @@ function agruparPorCategoria(gastos: ReturnType<typeof useGastos>['data']): Gast
 export default function Gastos() {
   const { data: gastos = [], isLoading } = useGastos()
   const { importar } = useImportarCsv()
+  const isOnline = useOnlineStatus()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [estadoImport, setEstadoImport] = useState<EstadoImport>('idle')
   const [preview, setPreview] = useState<PreviewImport | null>(null)
@@ -84,7 +86,8 @@ export default function Gastos() {
           {temGastos && (
             <button
               onClick={abrirSeletorArquivo}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-300 transition-colors"
+              disabled={!isOnline}
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-xl px-3 py-2 text-xs font-medium text-slate-300 transition-colors"
             >
               <span>🔄</span>
               <span>Atualizar</span>
@@ -93,7 +96,8 @@ export default function Gastos() {
           <button
             data-tour="importar-csv"
             onClick={() => setEstadoImport('tutorial')}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-300 transition-colors"
+            disabled={!isOnline}
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 rounded-xl px-3 py-2 text-xs font-medium text-slate-300 transition-colors"
           >
             <span>📄</span>
             <span>Importar CSV</span>
@@ -118,7 +122,8 @@ export default function Gastos() {
           </p>
           <button
             onClick={() => setEstadoImport('tutorial')}
-            className="bg-indigo-600 hover:bg-indigo-500 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors"
+            disabled={!isOnline}
+            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors"
           >
             Escolher arquivo CSV
           </button>
