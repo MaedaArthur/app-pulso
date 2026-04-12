@@ -1,14 +1,13 @@
 # Renda Frag
 
-App mobile-first de controle financeiro para quem tem renda fragmentada — freelas, plataformas, bolsas, múltiplas fontes.
+App mobile-first de controle financeiro para quem tem renda fragmentada: freelas, plataformas, bolsas, múltiplas fontes.
 
-## O que faz
+## Funcionalidades
 
-- **Home** — saldo disponível em tempo real, estado do mês (verde/amarelo/vermelho), ritmo de gasto e projeção de poupança
-- **Entradas** — registra receitas com fonte e data, edição inline
-- **Gastos** — importa extrato Nubank (crédito e Pix/conta), categorização automática com memória de correções por merchant
-- **Reserva** — acompanha saúde da reserva de emergência (meses cobertos)
-- **Config** — edita todos os parâmetros financeiros inline, sem formulário de salvar
+- **Home** — saldo disponível, estado do mês (verde/amarelo/vermelho), ritmo de gasto, projeção de poupança e saúde da reserva de emergência
+- **Entradas** — registra receitas com valor, fonte e data; edição e exclusão inline
+- **Gastos** — importa extrato Nubank (CSV de crédito e Pix/conta), categorização automática com memória de correções por merchant; re-upload com modo substituir
+- **Config** — edita todos os parâmetros financeiros inline (renda estimada, meta de poupança, gastos fixos, dinheiro guardado); preferências salvas em chips
 
 ## Stack
 
