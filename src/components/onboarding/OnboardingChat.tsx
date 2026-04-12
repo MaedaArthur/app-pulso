@@ -199,7 +199,7 @@ export default function OnboardingChat() {
       1600
     )
     await enviarMensagemApp(
-      'Uma dica antes de começar: importe seu extrato Nubank toda semana pra manter o saldo certinho. Leva menos de 1 minuto. 💡',
+      'Bem-vindo ao app! Agora você tem tudo pra acompanhar seu mês. 🚀',
       undefined,
       1800
     )
@@ -377,13 +377,21 @@ export default function OnboardingChat() {
         )}
 
         {passo === 'dica' && !bloqueado && (
-          <button
-            onClick={entrarNoApp}
-            disabled={isPending}
-            className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-50 rounded-xl py-3 font-semibold text-sm transition-colors"
-          >
-            {isPending ? 'Salvando...' : 'Entrar no app →'}
-          </button>
+          <div className="space-y-3">
+            <div className="bg-slate-800 rounded-2xl p-4 border-l-4 border-indigo-500">
+              <p className="text-sm font-semibold mb-1">💡 Dica rápida</p>
+              <p className="text-sm text-slate-300">
+                Importe seu extrato Nubank toda semana pra manter o saldo certinho. Leva menos de 1 minuto.
+              </p>
+            </div>
+            <button
+              onClick={entrarNoApp}
+              disabled={isPending}
+              className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-50 rounded-xl py-3 font-semibold text-sm transition-colors"
+            >
+              {isPending ? 'Salvando...' : 'Entrar no app →'}
+            </button>
+          </div>
         )}
       </div>
     </div>
