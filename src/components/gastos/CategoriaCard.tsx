@@ -67,10 +67,15 @@ function ItemGasto({ gasto }: ItemGastoProps) {
   async function handleCriarCategoria() {
     const nome = novaCategoria.trim().toLowerCase()
     if (!nome) return
-    await criarCategoriaCustom(nome)
-    handleSelecionarCategoria(nome)
-    setNovaCategoria('')
-    setCriandoCategoria(false)
+    try {
+      await criarCategoriaCustom(nome)
+      handleSelecionarCategoria(nome)
+      setNovaCategoria('')
+      setCriandoCategoria(false)
+    } catch (err) {
+      console.error('[categorias-custom] erro ao criar categoria:', err)
+      alert('Erro ao criar categoria. Veja o console para detalhes.')
+    }
   }
 
   function handleAbrirCriacao() {
