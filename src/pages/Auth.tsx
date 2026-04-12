@@ -58,6 +58,12 @@ export default function Auth() {
           <p className="text-slate-400 text-sm">
             Enviamos um link para <strong>{email}</strong>. Clique nele para ativar sua conta.
           </p>
+          <button
+            onClick={() => setConfirmacaoEnviada(false)}
+            className="mt-6 text-sm text-slate-400 underline underline-offset-4"
+          >
+            Voltar para o login
+          </button>
         </div>
       </div>
     )
