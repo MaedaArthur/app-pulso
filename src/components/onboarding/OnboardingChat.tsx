@@ -8,8 +8,21 @@ const FAIXAS_RENDA = [
   { label: 'acima de R$ 5.000', valor: 6000 },
 ]
 
-const ONDE_GUARDA = ['💚 Nubank', '🏦 Banco trad.', '💰 Poupança', '💵 Carteira']
-const FOCO = ['🛡 Reserva de emergência', '💳 Pagar dívida', '📊 Gastar melhor']
+const ONDE_GUARDA = [
+  '💚 Nubank',
+  '🏦 Banco tradicional',
+  '💛 Outro banco digital',
+  '💰 Poupança',
+  '💵 Dinheiro em espécie',
+]
+
+const FOCO = [
+  '🛡 Reserva de emergência',
+  '💳 Pagar dívida',
+  '📊 Gastar melhor',
+  '📈 Acumular patrimônio',
+]
+
 const COMO_RECEBE = ['💼 Salário fixo', '🎨 Freela', '🛵 Plataforma', '🎓 Bolsa', '+ Outro']
 
 type Passo = 'boas-vindas' | 'p1' | 'p2' | 'p3' | 'p4' | 'p5' | 'dica'
@@ -24,20 +37,39 @@ interface Respostas {
   comoRecebe: string[]
   rendaEstimada: number
   gastosFixos: string
-  ondeGuarda: string
+  ondeGuarda: string[]
   foco: string
+}
+
+function DigitandoIndicator() {
+  return (
+    <div className="flex items-end gap-2">
+      <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+        RF
+      </div>
+      <div className="bg-slate-800 rounded-2xl rounded-tl-sm px-4 py-3">
+        <div className="flex gap-1 items-center h-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0ms]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:150ms]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:300ms]" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function OnboardingChat() {
   const [passo, setPasso] = useState<Passo>('boas-vindas')
   const [mensagens, setMensagens] = useState<Mensagem[]>([
-    { de: 'app', texto: 'Olá! Vamos configurar o app. 👋', subtexto: 'Leva menos de 1 minuto.' },
+    { de: 'app', texto: 'Olá! Vamos configurar o app rapidinho. 👋', subtexto: 'Leva menos de 1 minuto.' },
   ])
+  const [digitando, setDigitando] = useState(false)
+  const [bloqueado, setBloqueado] = useState(false)
   const [respostas, setRespostas] = useState<Respostas>({
     comoRecebe: [],
     rendaEstimada: 0,
     gastosFixos: '',
-    ondeGuarda: '',
+    ondeGuarda: [],
     foco: '',
   })
   const [gastosFixosInput, setGastosFixosInput] = useState('')
@@ -46,17 +78,42 @@ export default function OnboardingChat() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [mensagens, passo])
-
-  function adicionarMensagemApp(texto: string, subtexto?: string) {
-    setMensagens(prev => [...prev, { de: 'app', texto, subtexto }])
-  }
+  }, [mensagens, digitando, passo])
 
   function adicionarMensagemUsuario(texto: string) {
     setMensagens(prev => [...prev, { de: 'usuario', texto }])
   }
 
+  // Mostra "digitando..." por `delay` ms e depois adiciona a mensagem
+  function enviarMensagemApp(texto: string, subtexto?: string, delay = 1000): Promise<void> {
+    return new Promise(resolve => {
+      setDigitando(true)
+      setTimeout(() => {
+        setDigitando(false)
+        setMensagens(prev => [...prev, { de: 'app', texto, subtexto }])
+        resolve()
+      }, delay)
+    })
+  }
+
+  // Sequência: confirmação + próxima pergunta, bloqueando input no meio tempo
+  async function avancar(
+    respostaTexto: string,
+    confirmacao: string,
+    proximaPergunta: string,
+    proximoSubtexto: string | undefined,
+    proximoPasso: Passo
+  ) {
+    setBloqueado(true)
+    adicionarMensagemUsuario(respostaTexto)
+    await enviarMensagemApp(confirmacao, undefined, 700)
+    await enviarMensagemApp(proximaPergunta, proximoSubtexto, 900)
+    setPasso(proximoPasso)
+    setBloqueado(false)
+  }
+
   function toggleComoRecebe(opcao: string) {
+    if (bloqueado) return
     setRespostas(prev => {
       const jaTemOpcao = prev.comoRecebe.includes(opcao)
       return {
@@ -68,55 +125,86 @@ export default function OnboardingChat() {
     })
   }
 
+  function toggleOndeGuarda(opcao: string) {
+    if (bloqueado) return
+    setRespostas(prev => {
+      const jaTemOpcao = prev.ondeGuarda.includes(opcao)
+      return {
+        ...prev,
+        ondeGuarda: jaTemOpcao
+          ? prev.ondeGuarda.filter(o => o !== opcao)
+          : [...prev.ondeGuarda, opcao],
+      }
+    })
+  }
+
   function confirmarP1() {
-    if (respostas.comoRecebe.length === 0) return
-    adicionarMensagemUsuario(respostas.comoRecebe.join(' + '))
-    setTimeout(() => {
-      adicionarMensagemApp(
-        'Em média, quanto costuma entrar na sua conta por mês? 💸',
-        'Uma estimativa já ajuda — você pode ajustar depois em Config'
-      )
-      setPasso('p2')
-    }, 300)
+    if (respostas.comoRecebe.length === 0 || bloqueado) return
+    avancar(
+      respostas.comoRecebe.join(' + '),
+      'Faz sentido! Renda que varia é mais comum do que parece. 👍',
+      'Em média, quanto costuma entrar na sua conta por mês? 💸',
+      'Uma estimativa já ajuda — você pode ajustar depois em Config',
+      'p2'
+    )
   }
 
   function confirmarP2(faixa: typeof FAIXAS_RENDA[number]) {
+    if (bloqueado) return
     setRespostas(prev => ({ ...prev, rendaEstimada: faixa.valor }))
-    adicionarMensagemUsuario(faixa.label)
-    setTimeout(() => {
-      adicionarMensagemApp(
-        'Quanto você paga de contas fixas todo mês? 🏠',
-        'Aluguel, internet, Netflix, academia — o que chega todo mês independente do que você faz'
-      )
-      setPasso('p3')
-    }, 300)
+    avancar(
+      faixa.label,
+      'Boa referência! Vou usar isso pra calcular seus limites. 📊',
+      'Quanto você paga de contas fixas todo mês? 🏠',
+      'Aluguel, internet, Netflix, academia — o que chega todo mês independente do que você faz',
+      'p3'
+    )
   }
 
   function confirmarP3() {
+    if (bloqueado) return
     const valor = parseFloat(gastosFixosInput.replace(',', '.'))
     if (isNaN(valor) || valor < 0) return
     setRespostas(prev => ({ ...prev, gastosFixos: gastosFixosInput }))
-    adicionarMensagemUsuario(`R$ ${gastosFixosInput}`)
-    setTimeout(() => {
-      adicionarMensagemApp('Onde fica esse dinheiro? 🏦')
-      setPasso('p4')
-    }, 300)
+    avancar(
+      `R$ ${gastosFixosInput}`,
+      'Anotado! Vou separar esse valor do seu orçamento variável. 🧮',
+      'Onde fica guardado esse dinheiro? 🏦',
+      'Pode marcar mais de um',
+      'p4'
+    )
   }
 
-  function confirmarP4(opcao: string) {
-    setRespostas(prev => ({ ...prev, ondeGuarda: opcao }))
-    adicionarMensagemUsuario(opcao)
-    setTimeout(() => {
-      adicionarMensagemApp('Qual é seu foco agora? 🎯')
-      setPasso('p5')
-    }, 300)
+  function confirmarP4() {
+    if (respostas.ondeGuarda.length === 0 || bloqueado) return
+    avancar(
+      respostas.ondeGuarda.join(' + '),
+      'Ótimo, já sei onde seu dinheiro mora. 🏠',
+      'Qual é seu foco financeiro agora? 🎯',
+      undefined,
+      'p5'
+    )
   }
 
-  function confirmarP5(opcao: string) {
+  async function confirmarP5(opcao: string) {
+    if (bloqueado) return
     const novasRespostas = { ...respostas, foco: opcao }
     setRespostas(novasRespostas)
+    setBloqueado(true)
     adicionarMensagemUsuario(opcao)
-    setTimeout(() => setPasso('dica'), 300)
+    await enviarMensagemApp('Perfeito, vou adaptar as sugestões pro seu objetivo. 🎯', undefined, 700)
+    await enviarMensagemApp(
+      'Obrigado pelas informações! Já tenho tudo que preciso. 🙏',
+      undefined,
+      900
+    )
+    await enviarMensagemApp(
+      'Uma dica antes de começar: importe seu extrato Nubank toda semana pra manter o saldo certinho. Leva menos de 1 minuto. 💡',
+      undefined,
+      1200
+    )
+    setPasso('dica')
+    setBloqueado(false)
   }
 
   function entrarNoApp() {
@@ -125,7 +213,7 @@ export default function OnboardingChat() {
       como_recebe: respostas.comoRecebe.join('+').toLowerCase().replace(/[^a-z+]/g, ''),
       renda_mensal_estimada: respostas.rendaEstimada,
       gastos_fixos_mensais: gastosFixosNum,
-      onde_guarda: respostas.ondeGuarda,
+      onde_guarda: respostas.ondeGuarda.join('+'),
       foco: respostas.foco,
     })
   }
@@ -154,6 +242,9 @@ export default function OnboardingChat() {
             </div>
           </div>
         ))}
+
+        {digitando && <DigitandoIndicator />}
+
         <div ref={bottomRef} />
       </div>
 
@@ -161,10 +252,14 @@ export default function OnboardingChat() {
         {passo === 'boas-vindas' && (
           <button
             onClick={() => {
-              adicionarMensagemApp('Que tipo de renda você tem? 👋', 'Pode ser mais de um')
-              setPasso('p1')
+              setBloqueado(true)
+              enviarMensagemApp('Que tipo de renda você tem? 👋', 'Pode marcar mais de um').then(() => {
+                setPasso('p1')
+                setBloqueado(false)
+              })
             }}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 rounded-xl py-3 font-semibold text-sm transition-colors"
+            disabled={bloqueado}
+            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 rounded-xl py-3 font-semibold text-sm transition-colors"
           >
             Vamos lá →
           </button>
@@ -177,6 +272,7 @@ export default function OnboardingChat() {
                 <button
                   key={opcao}
                   onClick={() => toggleComoRecebe(opcao)}
+                  disabled={bloqueado}
                   className={`px-4 py-2 rounded-full text-sm border transition-colors ${
                     respostas.comoRecebe.includes(opcao)
                       ? 'bg-indigo-600 border-indigo-600 text-white'
@@ -189,7 +285,7 @@ export default function OnboardingChat() {
             </div>
             <button
               onClick={confirmarP1}
-              disabled={respostas.comoRecebe.length === 0}
+              disabled={respostas.comoRecebe.length === 0 || bloqueado}
               className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 rounded-xl py-3 font-semibold text-sm transition-colors"
             >
               Confirmar →
@@ -203,7 +299,8 @@ export default function OnboardingChat() {
               <button
                 key={faixa.label}
                 onClick={() => confirmarP2(faixa)}
-                className="px-4 py-2 rounded-full text-sm border border-slate-700 bg-slate-900 text-slate-300 hover:border-indigo-500 hover:text-white transition-colors"
+                disabled={bloqueado}
+                className="px-4 py-2 rounded-full text-sm border border-slate-700 bg-slate-900 text-slate-300 hover:border-indigo-500 hover:text-white disabled:opacity-40 transition-colors"
               >
                 {faixa.label}
               </button>
@@ -221,13 +318,14 @@ export default function OnboardingChat() {
                 onChange={e => setGastosFixosInput(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="flex-1 bg-transparent text-lg font-semibold focus:outline-none"
+                disabled={bloqueado}
+                className="flex-1 bg-transparent text-lg font-semibold focus:outline-none disabled:opacity-40"
                 autoFocus
               />
             </div>
             <button
               onClick={confirmarP3}
-              disabled={gastosFixosInput === ''}
+              disabled={gastosFixosInput === '' || bloqueado}
               className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 rounded-xl py-3 font-semibold text-sm transition-colors"
             >
               Confirmar →
@@ -236,17 +334,31 @@ export default function OnboardingChat() {
         )}
 
         {passo === 'p4' && (
-          <div className="flex flex-wrap gap-2">
-            {ONDE_GUARDA.map(opcao => (
-              <button
-                key={opcao}
-                onClick={() => confirmarP4(opcao)}
-                className="px-4 py-2 rounded-full text-sm border border-slate-700 bg-slate-900 text-slate-300 hover:border-indigo-500 hover:text-white transition-colors"
-              >
-                {opcao}
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="flex flex-wrap gap-2">
+              {ONDE_GUARDA.map(opcao => (
+                <button
+                  key={opcao}
+                  onClick={() => toggleOndeGuarda(opcao)}
+                  disabled={bloqueado}
+                  className={`px-4 py-2 rounded-full text-sm border transition-colors ${
+                    respostas.ondeGuarda.includes(opcao)
+                      ? 'bg-indigo-600 border-indigo-600 text-white'
+                      : 'bg-slate-900 border-slate-700 text-slate-300'
+                  }`}
+                >
+                  {opcao}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={confirmarP4}
+              disabled={respostas.ondeGuarda.length === 0 || bloqueado}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 rounded-xl py-3 font-semibold text-sm transition-colors"
+            >
+              Confirmar →
+            </button>
+          </>
         )}
 
         {passo === 'p5' && (
@@ -255,7 +367,8 @@ export default function OnboardingChat() {
               <button
                 key={opcao}
                 onClick={() => confirmarP5(opcao)}
-                className="px-4 py-2 rounded-full text-sm border border-slate-700 bg-slate-900 text-slate-300 hover:border-indigo-500 hover:text-white transition-colors"
+                disabled={bloqueado}
+                className="px-4 py-2 rounded-full text-sm border border-slate-700 bg-slate-900 text-slate-300 hover:border-indigo-500 hover:text-white disabled:opacity-40 transition-colors"
               >
                 {opcao}
               </button>
@@ -263,23 +376,14 @@ export default function OnboardingChat() {
           </div>
         )}
 
-        {passo === 'dica' && (
-          <div className="space-y-3">
-            <div className="bg-slate-800 rounded-2xl p-4 border-l-4 border-indigo-500">
-              <p className="text-sm font-semibold mb-1">💡 Dica importante</p>
-              <p className="text-sm text-slate-300">
-                Importe seu extrato Nubank toda semana pra manter o saldo certinho.
-                Leva menos de 1 minuto.
-              </p>
-            </div>
-            <button
-              onClick={entrarNoApp}
-              disabled={isPending}
-              className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-50 rounded-xl py-3 font-semibold text-sm transition-colors"
-            >
-              {isPending ? 'Salvando...' : 'Entrar no app →'}
-            </button>
-          </div>
+        {passo === 'dica' && !bloqueado && (
+          <button
+            onClick={entrarNoApp}
+            disabled={isPending}
+            className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-50 rounded-xl py-3 font-semibold text-sm transition-colors"
+          >
+            {isPending ? 'Salvando...' : 'Entrar no app →'}
+          </button>
         )}
       </div>
     </div>
