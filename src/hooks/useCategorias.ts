@@ -59,6 +59,39 @@ export function useAtualizarCategoriaGasto() {
   })
 }
 
+export function useCategoriasCustom() {
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: ['categorias-custom', user?.id],
+    queryFn: async (): Promise<string[]> => {
+      const { data, error } = await supabase
+        .from('categorias_custom')
+        .select('nome')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      return data.map(r => r.nome)
+    },
+    enabled: !!user,
+  })
+
+  const mutation = useMutation({
+    mutationFn: async (nome: string) => {
+      const { error } = await supabase
+        .from('categorias_custom')
+        .insert({ user_id: user!.id, nome })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categorias-custom'] })
+    },
+  })
+
+  return { data: query.data ?? [], criar: mutation.mutateAsync }
+}
+
 // Combina correção de categoria + regra de merchant numa operação só
 export function useCorrigirCategoria() {
   const { mutate: atualizarGasto } = useAtualizarCategoriaGasto()

@@ -38,12 +38,4 @@ export interface Gasto {
 
 export type EstadoMes = 'verde' | 'amarelo' | 'vermelho'
 
-export type Categoria =
-  | 'alimentacao'
-  | 'transporte'
-  | 'moradia'
-  | 'saude'
-  | 'lazer'
-  | 'assinaturas'
-  | 'educacao'
-  | 'outros'
+export type Categoria = string

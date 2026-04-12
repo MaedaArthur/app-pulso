@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import type { Categoria, Gasto } from '../../types'
 import type { GastosPorCategoria } from '../../hooks/useSaldo'
 import { TODAS_CATEGORIAS } from '../../lib/categories'
-import { useAtualizarCategoriaGasto, useSalvarCorrecao } from '../../hooks/useCategorias'
+import { useAtualizarCategoriaGasto, useSalvarCorrecao, useCategoriasCustom } from '../../hooks/useCategorias'
 import { normalizarMerchant } from '../../lib/categories'
 import { formatBRL, formatDataCurta } from '../../lib/fmt'
 
-export const ICONES: Record<Categoria, string> = {
+const ICONES_PADRAO: Record<string, string> = {
   alimentacao: '🍔',
   transporte:  '🚗',
   moradia:     '🏠',
@@ -17,7 +17,13 @@ export const ICONES: Record<Categoria, string> = {
   outros:      '📦',
 }
 
-const CORES_BARRA: Record<Categoria, string> = {
+export const ICONES = new Proxy(ICONES_PADRAO, {
+  get(target, key: string) {
+    return target[key] ?? '🏷️'
+  },
+})
+
+const CORES_BARRA_PADRAO: Record<string, string> = {
   alimentacao: 'bg-amber-500',
   transporte:  'bg-blue-500',
   moradia:     'bg-violet-500',
@@ -28,14 +34,24 @@ const CORES_BARRA: Record<Categoria, string> = {
   outros:      'bg-slate-500',
 }
 
+const CORES_BARRA = new Proxy(CORES_BARRA_PADRAO, {
+  get(target, key: string) {
+    return target[key] ?? 'bg-slate-600'
+  },
+})
+
 interface ItemGastoProps {
   gasto: Gasto
 }
 
 function ItemGasto({ gasto }: ItemGastoProps) {
   const [editandoCategoria, setEditandoCategoria] = useState(false)
+  const [criandoCategoria, setCriandoCategoria] = useState(false)
+  const [novaCategoria, setNovaCategoria] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
   const { mutate: atualizarGasto, isPending } = useAtualizarCategoriaGasto()
   const { mutate: salvarCorrecao } = useSalvarCorrecao()
+  const { data: categoriasCustom, criar: criarCategoriaCustom } = useCategoriasCustom()
 
   function handleSelecionarCategoria(cat: Categoria) {
     if (cat === gasto.categoria) {
@@ -47,6 +63,22 @@ function ItemGasto({ gasto }: ItemGastoProps) {
     salvarCorrecao({ merchantKey, categoria: cat })
     setEditandoCategoria(false)
   }
+
+  async function handleCriarCategoria() {
+    const nome = novaCategoria.trim().toLowerCase()
+    if (!nome) return
+    await criarCategoriaCustom(nome)
+    handleSelecionarCategoria(nome)
+    setNovaCategoria('')
+    setCriandoCategoria(false)
+  }
+
+  function handleAbrirCriacao() {
+    setCriandoCategoria(true)
+    setTimeout(() => inputRef.current?.focus(), 50)
+  }
+
+  const todasCategorias = [...TODAS_CATEGORIAS, ...categoriasCustom]
 
   return (
     <div className="border-b border-slate-800/50 last:border-0">
@@ -67,7 +99,7 @@ function ItemGasto({ gasto }: ItemGastoProps) {
 
       {editandoCategoria && (
         <div className="px-4 pb-3 flex flex-wrap gap-1.5">
-          {TODAS_CATEGORIAS.map(cat => (
+          {todasCategorias.map(cat => (
             <button
               key={cat}
               onClick={() => handleSelecionarCategoria(cat)}
@@ -81,6 +113,39 @@ function ItemGasto({ gasto }: ItemGastoProps) {
               {ICONES[cat]} {cat}
             </button>
           ))}
+
+          {criandoCategoria ? (
+            <div className="flex items-center gap-1 mt-0.5">
+              <input
+                ref={inputRef}
+                value={novaCategoria}
+                onChange={e => setNovaCategoria(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleCriarCategoria()}
+                placeholder="nome da categoria"
+                className="text-xs px-2.5 py-1 rounded-full border border-indigo-500 bg-slate-800 text-slate-200 outline-none w-36"
+              />
+              <button
+                onClick={handleCriarCategoria}
+                disabled={!novaCategoria.trim()}
+                className="text-xs px-2.5 py-1 rounded-full bg-indigo-600 text-white disabled:opacity-40"
+              >
+                ✓
+              </button>
+              <button
+                onClick={() => { setCriandoCategoria(false); setNovaCategoria('') }}
+                className="text-xs px-2.5 py-1 rounded-full border border-slate-700 text-slate-400"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handleAbrirCriacao}
+              className="text-xs px-2.5 py-1 rounded-full border border-dashed border-slate-600 text-slate-500 hover:border-slate-400 hover:text-slate-300 transition-colors"
+            >
+              + nova categoria
+            </button>
+          )}
         </div>
       )}
     </div>
