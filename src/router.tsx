@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import { usePerfil } from './hooks/usePerfil'
 import TabBar from './components/shared/TabBar'
+import { TourProvider } from './contexts/TourContext'
+import TourOverlay from './components/tour/TourOverlay'
 import Auth from './pages/Auth'
 import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
@@ -41,10 +43,13 @@ function OnboardingGuard() {
 
 function AppLayout() {
   return (
-    <div className="max-w-md mx-auto min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))]">
-      <Outlet />
-      <TabBar />
-    </div>
+    <TourProvider>
+      <div className="max-w-md mx-auto min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))]">
+        <Outlet />
+        <TabBar />
+      </div>
+      <TourOverlay />
+    </TourProvider>
   )
 }
 

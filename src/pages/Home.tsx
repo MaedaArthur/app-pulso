@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useSaldo } from '../hooks/useSaldo'
 import { useAuth } from '../contexts/AuthContext'
+import { useTour } from '../contexts/TourContext'
 import { supabase } from '../lib/supabase'
 import { diasPassadosNoMes, diasTotaisDoMes } from '../lib/datas'
 import HeroStatus from '../components/home/HeroStatus'
@@ -63,6 +65,15 @@ export default function Home() {
     projecaoMeta,
     isLoading,
   } = useSaldo()
+
+  const { iniciar } = useTour()
+
+  useEffect(() => {
+    if (perfil && perfil.tutorial_visto === false && !isLoading) {
+      const timer = setTimeout(iniciar, 400)
+      return () => clearTimeout(timer)
+    }
+  }, [perfil, isLoading, iniciar])
 
   if (isLoading) {
     return (
