@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAdicionarEntrada } from '../../hooks/useAdicionarEntrada'
+import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 
 function hojeISO(): string {
   return new Date().toISOString().split('T')[0]
@@ -11,6 +12,7 @@ export default function EntradaForm() {
   const [fonte, setFonte] = useState('')
   const [data, setData] = useState(hojeISO())
   const { mutate: adicionar, isPending } = useAdicionarEntrada()
+  const isOnline = useOnlineStatus()
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -42,7 +44,8 @@ export default function EntradaForm() {
           min="0.01"
           step="0.01"
           required
-          className="flex-1 bg-transparent text-3xl font-bold text-emerald-400 focus:outline-none placeholder:text-slate-800 w-0"
+          disabled={!isOnline}
+          className="flex-1 bg-transparent text-3xl font-bold text-emerald-400 focus:outline-none placeholder:text-slate-800 w-0 disabled:opacity-40"
         />
       </div>
 
@@ -55,7 +58,8 @@ export default function EntradaForm() {
           onChange={e => setFonte(e.target.value)}
           placeholder="ex: salário, freela, Nubank"
           required
-          className="w-full bg-transparent text-base text-slate-200 focus:outline-none placeholder:text-slate-700"
+          disabled={!isOnline}
+          className="w-full bg-transparent text-base text-slate-200 focus:outline-none placeholder:text-slate-700 disabled:opacity-40"
         />
       </div>
 
@@ -67,13 +71,14 @@ export default function EntradaForm() {
           value={data}
           onChange={e => setData(e.target.value)}
           required
-          className="w-full bg-transparent text-base text-slate-200 focus:outline-none"
+          disabled={!isOnline}
+          className="w-full bg-transparent text-base text-slate-200 focus:outline-none disabled:opacity-40"
         />
       </div>
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !isOnline}
         className="w-full bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 rounded-2xl py-4 text-sm font-semibold transition-colors"
       >
         {isPending ? 'Salvando...' : 'Salvar entrada'}
