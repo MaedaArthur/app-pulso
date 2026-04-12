@@ -8,6 +8,7 @@ export interface Perfil {
   como_recebe: string | null
   onde_guarda: string | null
   foco: string | null
+  tipo_reserva: 'buffer' | 'reserva' | null
   onboarding_completo: boolean
   dica_csv_vista: boolean
   created_at: string

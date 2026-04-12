@@ -33,6 +33,33 @@ function parseValorBR(valor: string): number {
   return parseFloat(semPontoMilhar.replace(',', '.'))
 }
 
+// Operações internas que não representam gastos reais:
+// aplicações/resgates de RDB e pagamento de fatura de crédito.
+const OPERACOES_INTERNAS_PIX = [
+  'pagamento de fatura',
+  'aplicacao rdb',
+  'aplicação rdb',
+  'resgate rdb',
+]
+
+function normalizar(s: string): string {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
+function isOperacaoInternaPix(descricao: string): boolean {
+  const d = normalizar(descricao)
+  return OPERACOES_INTERNAS_PIX.some(op => d.includes(op))
+}
+
+// Extrai o nome do destinatário de descrições longas do Nubank:
+// "Transferência enviada pelo Pix - NOME - CPF/CNPJ - BANCO..." → "NOME"
+// Se não encaixar no padrão, retorna a descrição original.
+function extrairTituloPix(descricao: string): string {
+  const match = descricao.match(/pelo Pix - (.+?) - /)
+  if (match) return match[1].trim()
+  return descricao
+}
+
 export function parseCsvNubank(content: string): { tipo: TipoCSV; gastos: GastoParseado[] } {
   const linhas = parseCsvLinhas(content)
   if (linhas.length < 2) return { tipo: 'credito', gastos: [] }
@@ -67,9 +94,10 @@ export function parseCsvNubank(content: string): { tipo: TipoCSV; gastos: GastoP
 
   const gastos = rows
     .filter(row => row.length > Math.max(iData, iValor))
+    .filter(row => !isOperacaoInternaPix(row[iTitulo] ?? ''))
     .map(row => ({
       data:   ddmmyyyyParaIso(row[iData]),
-      titulo: row[iTitulo] ?? '',
+      titulo: extrairTituloPix(row[iTitulo] ?? ''),
       valor:  parseValorBR(row[iValor]),
     }))
     .filter(g => !isNaN(g.valor) && g.valor < 0)

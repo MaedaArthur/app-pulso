@@ -142,7 +142,7 @@ export default function OnboardingChat() {
       respostas.comoRecebe.join(' + '),
       'Faz sentido! Renda que varia é mais comum do que parece. 👍',
       'Em média, quanto costuma entrar na sua conta por mês? 💸',
-      'Uma estimativa já ajuda — você pode ajustar depois em Config',
+      'Uma estimativa já ajuda. Você pode ajustar depois em Config.',
       'p2'
     )
   }
@@ -154,7 +154,7 @@ export default function OnboardingChat() {
       faixa.label,
       'Boa referência! Vou usar isso pra calcular seus limites. 📊',
       'Quanto você paga de contas fixas todo mês? 🏠',
-      'Aluguel, internet, Netflix, academia — o que chega todo mês independente do que você faz',
+      'Aluguel, internet, Netflix, academia. O que chega todo mês independente do que você faz.',
       'p3'
     )
   }

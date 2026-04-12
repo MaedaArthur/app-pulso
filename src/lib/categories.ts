@@ -1,5 +1,10 @@
 import type { Categoria } from '../types'
 
+export const TODAS_CATEGORIAS: Categoria[] = [
+  'alimentacao', 'transporte', 'moradia', 'saude',
+  'lazer', 'assinaturas', 'educacao', 'outros',
+]
+
 type CategoriaComKeywords = Exclude<Categoria, 'outros'>
 
 const KEYWORDS: Record<CategoriaComKeywords, string[]> = {
@@ -46,7 +51,26 @@ function normalizar(texto: string): string {
     .replace(/[\u0300-\u036f]/g, '')
 }
 
-export function categorizar(titulo: string): Categoria {
+// Extrai chave de merchant para lookup de correções de usuário.
+// Remove sufixos após asterisco (IFOOD*RESTAURANTE → ifood)
+// e códigos numéricos no final (POSTO BR 0234 → posto br).
+export function normalizarMerchant(titulo: string): string {
+  return titulo
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\*.*$/, '')
+    .replace(/\s+[\d][\d\s-]*$/, '')
+    .trim()
+}
+
+export function categorizar(titulo: string, correcoes?: Map<string, Categoria>): Categoria {
+  if (correcoes) {
+    const merchantKey = normalizarMerchant(titulo)
+    const correcao = correcoes.get(merchantKey)
+    if (correcao) return correcao
+  }
+
   const normalizado = normalizar(titulo)
   for (const [categoria, keywords] of Object.entries(KEYWORDS) as [CategoriaComKeywords, string[]][]) {
     if (keywords.some(kw => normalizado.includes(normalizar(kw)))) {

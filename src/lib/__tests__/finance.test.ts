@@ -2,27 +2,49 @@ import { describe, it, expect } from 'vitest'
 import { calcularSaldo, estadoDoMes, ritmoDeMes } from '../finance'
 
 describe('calcularSaldo', () => {
-  it('retorna dinheiro_guardado menos gasto menos meta', () => {
+  it('tipo buffer: inclui dinheiro_guardado no saldo', () => {
     expect(calcularSaldo({
       dinheiroGuardado: 2000,
+      tipoReserva: 'buffer',
+      totalEntradasNoMes: 500,
       totalGastoNoMes: 800,
-      metaPoupancaMensal: 300,
-    })).toBe(900)
+    })).toBe(1700) // 2000 + 500 - 800
   })
 
-  it('retorna negativo quando gastos superam o guardado', () => {
+  it('tipo reserva: não inclui dinheiro_guardado no saldo', () => {
     expect(calcularSaldo({
-      dinheiroGuardado: 500,
+      dinheiroGuardado: 2000,
+      tipoReserva: 'reserva',
+      totalEntradasNoMes: 500,
+      totalGastoNoMes: 800,
+    })).toBe(-300) // 0 + 500 - 800
+  })
+
+  it('retorna negativo quando gastos superam entradas', () => {
+    expect(calcularSaldo({
+      dinheiroGuardado: 0,
+      tipoReserva: null,
+      totalEntradasNoMes: 0,
       totalGastoNoMes: 600,
-      metaPoupancaMensal: 100,
-    })).toBe(-200)
+    })).toBe(-600)
   })
 
-  it('retorna zero quando tudo se cancela', () => {
+  it('meta poupança não afeta o saldo — é exibida separadamente', () => {
+    // mesmo resultado independente de qualquer meta
     expect(calcularSaldo({
-      dinheiroGuardado: 1000,
+      dinheiroGuardado: 0,
+      tipoReserva: null,
+      totalEntradasNoMes: 3000,
       totalGastoNoMes: 700,
-      metaPoupancaMensal: 300,
+    })).toBe(2300)
+  })
+
+  it('saldo zerado quando entradas == gastos', () => {
+    expect(calcularSaldo({
+      dinheiroGuardado: 0,
+      tipoReserva: null,
+      totalEntradasNoMes: 1000,
+      totalGastoNoMes: 1000,
     })).toBe(0)
   })
 })

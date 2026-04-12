@@ -20,9 +20,10 @@ interface Props {
   estado: EstadoMes
   gastosDesatualizados: boolean
   semDados: boolean
+  metaPoupancaMensal: number
 }
 
-export default function HeroStatus({ nome, saldoReal, estado, gastosDesatualizados, semDados }: Props) {
+export default function HeroStatus({ nome, saldoReal, estado, gastosDesatualizados, semDados, metaPoupancaMensal }: Props) {
   const navigate = useNavigate()
   const primeiroNome = nome?.split(' ')[0] ?? 'você'
 
@@ -47,7 +48,13 @@ export default function HeroStatus({ nome, saldoReal, estado, gastosDesatualizad
       <p className="text-5xl font-bold tracking-tight text-white mb-1">
         {formatBRL(saldoReal)}
       </p>
-      <p className="text-xs text-white/60">disponível depois de guardar</p>
+      <p className="text-xs text-white/60">disponível no momento</p>
+
+      {metaPoupancaMensal > 0 && (
+        <p className="text-xs text-white/50 mt-1">
+          🎯 meta de guardar {formatBRL(metaPoupancaMensal)} esse mês
+        </p>
+      )}
 
       {gastosDesatualizados && (
         <button

@@ -3,20 +3,17 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Perfil } from '../types'
 
-type DadosOnboarding = Pick<
-  Perfil,
-  'como_recebe' | 'renda_mensal_estimada' | 'gastos_fixos_mensais' | 'onde_guarda' | 'foco' | 'dinheiro_guardado' | 'tipo_reserva'
->
+type DadosPerfil = Partial<Omit<Perfil, 'id' | 'created_at' | 'onboarding_completo'>>
 
-export function useOnboarding() {
+export function useAtualizarPerfil() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (dados: DadosOnboarding) => {
+    mutationFn: async (dados: DadosPerfil) => {
       const { error } = await supabase
         .from('perfis')
-        .update({ ...dados, onboarding_completo: true })
+        .update(dados)
         .eq('id', user!.id)
       if (error) throw error
     },
