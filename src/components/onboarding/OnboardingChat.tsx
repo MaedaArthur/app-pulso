@@ -85,7 +85,7 @@ export default function OnboardingChat() {
   }
 
   // Mostra "digitando..." por `delay` ms e depois adiciona a mensagem
-  function enviarMensagemApp(texto: string, subtexto?: string, delay = 1000): Promise<void> {
+  function enviarMensagemApp(texto: string, subtexto?: string, delay = 1800): Promise<void> {
     return new Promise(resolve => {
       setDigitando(true)
       setTimeout(() => {
@@ -106,8 +106,8 @@ export default function OnboardingChat() {
   ) {
     setBloqueado(true)
     adicionarMensagemUsuario(respostaTexto)
-    await enviarMensagemApp(confirmacao, undefined, 700)
-    await enviarMensagemApp(proximaPergunta, proximoSubtexto, 900)
+    await enviarMensagemApp(confirmacao, undefined, 1200)
+    await enviarMensagemApp(proximaPergunta, proximoSubtexto, 1600)
     setPasso(proximoPasso)
     setBloqueado(false)
   }
@@ -192,16 +192,16 @@ export default function OnboardingChat() {
     setRespostas(novasRespostas)
     setBloqueado(true)
     adicionarMensagemUsuario(opcao)
-    await enviarMensagemApp('Perfeito, vou adaptar as sugestões pro seu objetivo. 🎯', undefined, 700)
+    await enviarMensagemApp('Perfeito, vou adaptar as sugestões pro seu objetivo. 🎯', undefined, 1200)
     await enviarMensagemApp(
       'Obrigado pelas informações! Já tenho tudo que preciso. 🙏',
       undefined,
-      900
+      1600
     )
     await enviarMensagemApp(
       'Uma dica antes de começar: importe seu extrato Nubank toda semana pra manter o saldo certinho. Leva menos de 1 minuto. 💡',
       undefined,
-      1200
+      1800
     )
     setPasso('dica')
     setBloqueado(false)
@@ -253,7 +253,7 @@ export default function OnboardingChat() {
           <button
             onClick={() => {
               setBloqueado(true)
-              enviarMensagemApp('Que tipo de renda você tem? 👋', 'Pode marcar mais de um').then(() => {
+              enviarMensagemApp('Que tipo de renda você tem? 👋', 'Pode marcar mais de um', 1600).then(() => {
                 setPasso('p1')
                 setBloqueado(false)
               })
