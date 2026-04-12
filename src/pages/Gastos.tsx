@@ -91,6 +91,7 @@ export default function Gastos() {
             </button>
           )}
           <button
+            data-tour="importar-csv"
             onClick={() => setEstadoImport('tutorial')}
             className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-300 transition-colors"
           >
@@ -124,11 +125,12 @@ export default function Gastos() {
         </div>
       )}
 
-      {grupos.map(grupo => (
+      {grupos.map((grupo, idx) => (
         <CategoriaCard
           key={grupo.categoria}
           grupo={grupo}
           totalGeral={totalGastos}
+          isFirst={idx === 0}
         />
       ))}
 

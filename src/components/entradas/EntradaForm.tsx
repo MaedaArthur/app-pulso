@@ -30,7 +30,7 @@ export default function EntradaForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6">
+    <form data-tour="nova-entrada" onSubmit={handleSubmit} className="mb-6">
       {/* Valor */}
       <div className="flex items-center bg-slate-900 rounded-2xl px-5 py-4 mb-3 gap-2 focus-within:ring-1 focus-within:ring-emerald-500 transition-all">
         <span className="text-slate-500 text-base font-medium">R$</span>

@@ -122,7 +122,7 @@ export default function Config() {
       <h1 className="text-lg font-bold mb-6">Configurações</h1>
 
       <Secao titulo="Saldo e metas">
-        <div className="space-y-3">
+        <div data-tour="config-campos" className="space-y-3">
           <CampoEditavel
             label="Dinheiro guardado"
             subtexto="Afeta seu saldo disponível."

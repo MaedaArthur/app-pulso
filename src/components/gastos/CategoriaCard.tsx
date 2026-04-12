@@ -90,15 +90,16 @@ function ItemGasto({ gasto }: ItemGastoProps) {
 interface Props {
   grupo: GastosPorCategoria
   totalGeral: number
+  isFirst?: boolean
 }
 
-export default function CategoriaCard({ grupo, totalGeral }: Props) {
+export default function CategoriaCard({ grupo, totalGeral, isFirst }: Props) {
   const [expandido, setExpandido] = useState(false)
   const cat = grupo.categoria as Categoria
   const porcent = totalGeral > 0 ? (grupo.total / totalGeral) * 100 : 0
 
   return (
-    <div className="bg-slate-900 rounded-2xl overflow-hidden mb-2">
+    <div data-tour={isFirst ? 'corrigir-categoria' : undefined} className="bg-slate-900 rounded-2xl overflow-hidden mb-2">
       <button
         className="w-full px-4 py-4 flex items-center gap-3 text-left"
         onClick={() => setExpandido(e => !e)}
