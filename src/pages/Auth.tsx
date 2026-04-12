@@ -1,20 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Auth() {
+  const { user, loading } = useAuth()
+  const navigate = useNavigate()
   const [modo, setModo] = useState<'login' | 'signup'>('login')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [nome, setNome] = useState('')
   const [erro, setErro] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [confirmacaoEnviada, setConfirmacaoEnviada] = useState(false)
+
+  // Redireciona quando o usuário está autenticado
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/', { replace: true })
+    }
+  }, [user, loading, navigate])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setErro(null)
-    setLoading(true)
+    setSubmitting(true)
 
     if (modo === 'signup') {
       const { error } = await supabase.auth.signUp({
@@ -30,10 +41,13 @@ export default function Auth() {
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
       if (error) setErro('Email ou senha incorretos')
+      // redirecionamento acontece via useEffect quando user muda
     }
 
-    setLoading(false)
+    setSubmitting(false)
   }
+
+  if (loading) return null
 
   if (confirmacaoEnviada) {
     return (
@@ -104,10 +118,10 @@ export default function Auth() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting}
             className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-lg py-3 font-semibold text-sm transition-colors"
           >
-            {loading ? 'Aguarde...' : modo === 'login' ? 'Entrar' : 'Criar conta'}
+            {submitting ? 'Aguarde...' : modo === 'login' ? 'Entrar' : 'Criar conta'}
           </button>
         </form>
 
