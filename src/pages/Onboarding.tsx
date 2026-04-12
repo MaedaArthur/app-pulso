@@ -1,3 +1,5 @@
+import OnboardingChat from '../components/onboarding/OnboardingChat'
+
 export default function Onboarding() {
-  return <div className="p-4">Onboarding (em breve)</div>
+  return <OnboardingChat />
 }
