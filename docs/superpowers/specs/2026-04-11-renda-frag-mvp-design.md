@@ -50,7 +50,6 @@ Scroll único com 4 blocos em ordem:
 - Card com gradiente verde/amarelo/vermelho conforme estado do mês
 - Saldo disponível em destaque (fonte grande, ~42px)
 - Legenda: "disponível depois de guardar"
-- Se último import de gastos > 7 dias: aviso "⚠ gastos desatualizados · importar →" (link para tela Gastos)
 
 ### Bloco 2 — Ritmo do mês
 - Label: "Faltam X dias de mês"
@@ -92,7 +91,6 @@ Formulário inline sempre visível no topo, lista de entradas do mês abaixo.
 
 ### Header
 - Total de gastos do mês em destaque (vermelho)
-- "atualizado em DD/MM" discreto abaixo do total (cinza)
 - Botão "📄 CSV" discreto no canto direito
 
 ### Lista de categorias
@@ -108,16 +106,14 @@ Formulário inline sempre visível no topo, lista de entradas do mês abaixo.
    - Título: "Como exportar do Nubank"
    - Crédito: Abra o app → Cartão → toque na fatura → "..." → *Exportar fatura*
    - Pix/débito: Abra o app → Conta → Extrato → escolha o período → *Exportar*
-   - Nota: "Você pode importar os dois — cada um cobre um tipo de gasto."
    - Botão: "Já tenho o arquivo →"
 3. Toca no botão → seletor de arquivo nativo do OS
-4. Arquivo selecionado → app detecta o tipo automaticamente (crédito ou Pix/débito) pela estrutura de colunas do CSV
-5. Bottom sheet sobe com resumo por categoria + total
+4. Arquivo selecionado → bottom sheet sobe com resumo por categoria + total
    - Ex: "23 gastos encontrados · R$ 1.240 total"
    - Agrupado por categoria com totais
    - Botão "Importar tudo ✓" / "Cancelar"
-6. Confirmar → bottom sheet fecha, gastos aparecem na lista
-7. Reimportações do mesmo arquivo ou períodos sobrepostos: deduplicação silenciosa por hash (sem duplicatas)
+5. Confirmar → bottom sheet fecha, gastos aparecem na lista
+6. Reimportações do mesmo arquivo: deduplicação silenciosa por hash (sem duplicatas)
 
 ---
 
@@ -179,10 +175,6 @@ Estilo chat: app faz perguntas em balões, usuário responde com chips. Uma tela
 > *chips single-select:* 🛡 Reserva de emergência · 💳 Pagar dívida · 📊 Gastar melhor
 
 Após última resposta: botão "Entrar no app →" aparece.
-
-**Tela de dica pós-onboarding** (aparece uma vez, antes da Home):
-> "Dica: importe seu extrato Nubank toda semana pra manter o saldo certinho. Leva menos de 1 minuto."
-> Botão: "Entendido →"
 
 ### Dados salvos no perfil
 - `como_recebe` — chips P1 (join com "+", ex: "salario+freela")
