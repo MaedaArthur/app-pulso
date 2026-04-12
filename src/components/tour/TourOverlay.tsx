@@ -15,12 +15,11 @@ interface TargetRect {
   height: number
 }
 
-function calcTooltipPos(rect: TargetRect): { top: number; left: number; acima: boolean } {
+function calcTooltipPos(rect: TargetRect): { top: number; left: number } {
   const abaixoOk = rect.top + rect.height + PADDING + TOOLTIP_HEIGHT + 12 < window.innerHeight
-  const acima = !abaixoOk
-  const top = acima
-    ? rect.top - PADDING - TOOLTIP_HEIGHT - 12
-    : rect.top + rect.height + PADDING + 12
+  const top = abaixoOk
+    ? rect.top + rect.height + PADDING + 12
+    : rect.top - PADDING - TOOLTIP_HEIGHT - 12
   const left = Math.max(
     16,
     Math.min(
@@ -28,13 +27,14 @@ function calcTooltipPos(rect: TargetRect): { top: number; left: number; acima: b
       window.innerWidth - TOOLTIP_WIDTH - 16,
     ),
   )
-  return { top, left, acima }
+  return { top, left }
 }
 
 export default function TourOverlay() {
-  const { ativo, passoAtual, avancar, pular } = useTour()
+  const { intro, ativo, passoAtual, confirmarTour, avancar, pular } = useTour()
   const [rect, setRect] = useState<TargetRect | null>(null)
 
+  // Encontra o elemento e posiciona o anel ao mudar de passo
   useEffect(() => {
     if (!ativo) return
     setRect(null)
@@ -57,7 +57,6 @@ export default function TourOverlay() {
         const t = setTimeout(tryFind, 100)
         timers.push(t)
       } else {
-        // elemento não encontrado: pula esse passo
         avancar()
       }
     }
@@ -68,6 +67,55 @@ export default function TourOverlay() {
 
     return () => { timers.forEach(clearTimeout) }
   }, [ativo, passoAtual, avancar])
+
+  // Recalcula posição ao rolar ou redimensionar
+  useEffect(() => {
+    if (!ativo) return
+
+    function reposicionar() {
+      const step = TOUR_STEPS[passoAtual]
+      const el = document.querySelector<HTMLElement>(`[data-tour="${step.id}"]`)
+      if (el) {
+        const r = el.getBoundingClientRect()
+        setRect({ top: r.top, left: r.left, width: r.width, height: r.height })
+      }
+    }
+
+    window.addEventListener('scroll', reposicionar, { passive: true })
+    window.addEventListener('resize', reposicionar, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', reposicionar)
+      window.removeEventListener('resize', reposicionar)
+    }
+  }, [ativo, passoAtual])
+
+  // Tela de convite
+  if (intro) {
+    return createPortal(
+      <div className="fixed inset-0 bg-black/75 z-[9998] flex items-center justify-center p-6">
+        <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
+          <div className="text-4xl mb-4">🗺️</div>
+          <h2 className="text-base font-bold text-white mb-2">Quer um tour rápido?</h2>
+          <p className="text-xs text-slate-400 leading-relaxed mb-6">
+            Vou te mostrar como usar cada parte do app para manter seu saldo sempre certinho. Leva menos de 1 minuto.
+          </p>
+          <button
+            onClick={confirmarTour}
+            className="w-full bg-indigo-600 hover:bg-indigo-500 rounded-xl py-3 text-sm font-semibold text-white transition-colors mb-3"
+          >
+            Vamos lá →
+          </button>
+          <button
+            onClick={pular}
+            className="text-xs text-slate-500 hover:text-slate-400 transition-colors"
+          >
+            Pular tour
+          </button>
+        </div>
+      </div>,
+      document.body,
+    )
+  }
 
   if (!ativo || !rect) return null
 
@@ -98,10 +146,7 @@ export default function TourOverlay() {
 
   return createPortal(
     <>
-      {/* spotlight ring */}
       <div style={ringStyle} />
-
-      {/* tooltip */}
       <div style={tooltipStyle} className="bg-slate-900 border border-indigo-500/40 rounded-2xl p-4 shadow-xl">
         <div className="flex items-start justify-between gap-2 mb-2">
           <p className="text-xs text-indigo-400 font-semibold">

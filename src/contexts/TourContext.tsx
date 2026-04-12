@@ -5,9 +5,11 @@ import { useAtualizarPerfil } from '../hooks/useAtualizarPerfil'
 import { TOUR_STEPS } from '../components/tour/TOUR_STEPS'
 
 interface TourContextValue {
+  intro: boolean
   ativo: boolean
   passoAtual: number
   iniciar: () => void
+  confirmarTour: () => void
   avancar: () => void
   pular: () => void
 }
@@ -15,17 +17,24 @@ interface TourContextValue {
 const TourContext = createContext<TourContextValue | null>(null)
 
 export function TourProvider({ children }: { children: React.ReactNode }) {
+  const [intro, setIntro] = useState(false)
   const [ativo, setAtivo] = useState(false)
   const [passoAtual, setPassoAtual] = useState(0)
   const navigate = useNavigate()
   const { mutate: atualizarPerfil } = useAtualizarPerfil()
 
   const iniciar = useCallback(() => {
+    setIntro(true)
+  }, [])
+
+  const confirmarTour = useCallback(() => {
+    setIntro(false)
     setPassoAtual(0)
     setAtivo(true)
   }, [])
 
   const concluir = useCallback(() => {
+    setIntro(false)
     setAtivo(false)
     atualizarPerfil({ tutorial_visto: true })
   }, [atualizarPerfil])
@@ -49,7 +58,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   }, [concluir])
 
   return (
-    <TourContext.Provider value={{ ativo, passoAtual, iniciar, avancar, pular }}>
+    <TourContext.Provider value={{ intro, ativo, passoAtual, iniciar, confirmarTour, avancar, pular }}>
       {children}
     </TourContext.Provider>
   )
