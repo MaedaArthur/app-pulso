@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
+import { usePerfil } from './hooks/usePerfil'
 import TabBar from './components/shared/TabBar'
 import Auth from './pages/Auth'
 import Onboarding from './pages/Onboarding'
@@ -8,10 +9,33 @@ import Entradas from './pages/Entradas'
 import Gastos from './pages/Gastos'
 import Config from './pages/Config'
 
-function PrivateRoute() {
-  const { user, loading } = useAuth()
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-400">Carregando...</div>
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-slate-500 text-sm">
+      Carregando...
+    </div>
+  )
+}
+
+/** Exige auth + onboarding completo. Senão, redireciona. */
+function AppGuard() {
+  const { user, loading: authLoading } = useAuth()
+  const { data: perfil, isLoading: perfilLoading } = usePerfil()
+
+  if (authLoading || perfilLoading) return <LoadingScreen />
   if (!user) return <Navigate to="/auth" replace />
+  if (!perfil?.onboarding_completo) return <Navigate to="/onboarding" replace />
+  return <Outlet />
+}
+
+/** Exige auth. Se onboarding já feito, vai direto pra home. */
+function OnboardingGuard() {
+  const { user, loading: authLoading } = useAuth()
+  const { data: perfil, isLoading: perfilLoading } = usePerfil()
+
+  if (authLoading || perfilLoading) return <LoadingScreen />
+  if (!user) return <Navigate to="/auth" replace />
+  if (perfil?.onboarding_completo) return <Navigate to="/" replace />
   return <Outlet />
 }
 
@@ -27,9 +51,14 @@ function AppLayout() {
 export const router = createBrowserRouter([
   { path: '/auth', element: <Auth /> },
   {
-    element: <PrivateRoute />,
+    element: <OnboardingGuard />,
     children: [
       { path: '/onboarding', element: <Onboarding /> },
+    ],
+  },
+  {
+    element: <AppGuard />,
+    children: [
       {
         element: <AppLayout />,
         children: [
