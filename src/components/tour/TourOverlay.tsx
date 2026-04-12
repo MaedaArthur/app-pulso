@@ -41,18 +41,21 @@ export default function TourOverlay() {
 
     const step = TOUR_STEPS[passoAtual]
     let attempts = 0
+    const timers: ReturnType<typeof setTimeout>[] = []
 
     function tryFind() {
       const el = document.querySelector<HTMLElement>(`[data-tour="${step.id}"]`)
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        setTimeout(() => {
+        const t = setTimeout(() => {
           const r = el.getBoundingClientRect()
           setRect({ top: r.top, left: r.left, width: r.width, height: r.height })
         }, 300)
+        timers.push(t)
       } else if (attempts < 10) {
         attempts++
-        setTimeout(tryFind, 100)
+        const t = setTimeout(tryFind, 100)
+        timers.push(t)
       } else {
         // elemento não encontrado: pula esse passo
         avancar()
@@ -60,8 +63,10 @@ export default function TourOverlay() {
     }
 
     const delay = passoAtual === 0 ? 400 : 150
-    const timer = setTimeout(tryFind, delay)
-    return () => clearTimeout(timer)
+    const t = setTimeout(tryFind, delay)
+    timers.push(t)
+
+    return () => { timers.forEach(clearTimeout) }
   }, [ativo, passoAtual, avancar])
 
   if (!ativo || !rect) return null
