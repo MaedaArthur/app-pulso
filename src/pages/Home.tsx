@@ -1,47 +1,61 @@
-import { useAuth } from '../contexts/AuthContext'
-import { supabase } from '../lib/supabase'
-import { useQueryClient } from '@tanstack/react-query'
+import { useSaldo } from '../hooks/useSaldo'
+import { diasPassadosNoMes, diasTotaisDoMes } from '../lib/datas'
+import HeroStatus from '../components/home/HeroStatus'
+import RitmoDoMes from '../components/home/RitmoDoMes'
+import ResumoEntradaGasto from '../components/home/ResumoEntradaGasto'
+import CategoriasGastos from '../components/home/CategoriasGastos'
 
 export default function Home() {
-  const { user, signOut } = useAuth()
-  const queryClient = useQueryClient()
+  const {
+    saldoReal,
+    estado,
+    ritmo,
+    totalEntradas,
+    totalGastos,
+    entradas,
+    gastos,
+    gastosPorCategoria,
+    perfil,
+    gastosDesatualizados,
+    isLoading,
+  } = useSaldo()
 
-  async function resetarOnboarding() {
-    await supabase
-      .from('perfis')
-      .update({
-        onboarding_completo: false,
-        como_recebe: null,
-        renda_mensal_estimada: 0,
-        gastos_fixos_mensais: 0,
-        onde_guarda: null,
-        foco: null,
-      })
-      .eq('id', user!.id)
-    queryClient.invalidateQueries({ queryKey: ['perfil'] })
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-slate-500 text-sm">
+        Carregando...
+      </div>
+    )
   }
 
   return (
-    <div className="p-4 space-y-3">
-      <p className="text-slate-400 text-sm">Home (em breve)</p>
+    <div className="p-4">
+      <HeroStatus
+        nome={perfil?.nome ?? null}
+        saldoReal={saldoReal}
+        estado={estado}
+        gastosDesatualizados={gastosDesatualizados}
+      />
 
-      {import.meta.env.DEV && (
-        <div className="border border-dashed border-slate-700 rounded-xl p-3 space-y-2">
-          <p className="text-xs text-slate-500 font-mono">DEV</p>
-          <button
-            onClick={resetarOnboarding}
-            className="w-full text-sm bg-slate-800 hover:bg-slate-700 rounded-lg py-2 text-yellow-400 transition-colors"
-          >
-            ↺ Resetar onboarding
-          </button>
-          <button
-            onClick={signOut}
-            className="w-full text-sm bg-slate-800 hover:bg-slate-700 rounded-lg py-2 text-red-400 transition-colors"
-          >
-            → Sair da conta
-          </button>
-        </div>
-      )}
+      <RitmoDoMes
+        ritmo={ritmo}
+        estado={estado}
+        totalGastos={totalGastos}
+        diasPassados={diasPassadosNoMes()}
+        diasTotais={diasTotaisDoMes()}
+      />
+
+      <ResumoEntradaGasto
+        totalEntradas={totalEntradas}
+        totalGastos={totalGastos}
+        ultimasEntradas={entradas.slice(0, 3)}
+        ultimosGastos={gastos.slice(0, 3)}
+      />
+
+      <CategoriasGastos
+        gastosPorCategoria={gastosPorCategoria}
+        totalGastos={totalGastos}
+      />
     </div>
   )
 }
