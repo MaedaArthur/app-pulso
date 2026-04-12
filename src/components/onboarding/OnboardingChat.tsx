@@ -213,6 +213,8 @@ export default function OnboardingChat() {
       gastos_fixos_mensais: gastosFixosNum,
       onde_guarda: respostas.ondeGuarda.join('+'),
       foco: respostas.foco,
+      dinheiro_guardado: 0,
+      tipo_reserva: null,
     })
   }
 

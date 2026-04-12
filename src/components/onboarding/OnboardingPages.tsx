@@ -155,7 +155,7 @@ export default function OnboardingPages() {
       onde_guarda: respostas.ondeGuarda.join('|||'),
       foco: respostas.foco.join('|||'),
       dinheiro_guardado: dinheiroGuardadoNum,
-      tipo_reserva: respostas.tipoReserva || null,
+      tipo_reserva: (respostas.tipoReserva as 'buffer' | 'reserva') || null,
     })
   }
 

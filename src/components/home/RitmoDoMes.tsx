@@ -20,7 +20,7 @@ interface Props {
   diasTotais: number
 }
 
-export default function RitmoDoMes({ ritmo, estado, totalGastos, diasPassados, diasTotais }: Props) {
+export default function RitmoDoMes({ ritmo, estado, totalGastos, diasPassados }: Props) {
   const porcentDias = Math.round(ritmo.porcentagemDias * 100)
 
   return (
