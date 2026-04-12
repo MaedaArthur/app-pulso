@@ -33,7 +33,7 @@ input, button, select, textarea {
 @keyframes tour-in {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(6px);
+    transform: scale(0.96) translateY(8px);
   }
   to {
     opacity: 1;
@@ -41,6 +41,22 @@ input, button, select, textarea {
   }
 }
 
+@keyframes tour-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+}
+
 .tour-in {
-  animation: tour-in 0.18s ease-out both;
+  animation: tour-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tour-out {
+  animation: tour-out 0.18s ease-in both;
+  pointer-events: none;
 }

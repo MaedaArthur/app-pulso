@@ -1,5 +1,5 @@
 // src/components/tour/TourOverlay.tsx
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTour } from '../../contexts/TourContext'
 import { TOUR_STEPS } from './TOUR_STEPS'
@@ -7,6 +7,7 @@ import { TOUR_STEPS } from './TOUR_STEPS'
 const PADDING = 8
 const TOOLTIP_WIDTH = 280
 const TOOLTIP_HEIGHT = 150
+const FADE_OUT_MS = 180
 
 interface TargetRect {
   top: number
@@ -33,6 +34,21 @@ function calcTooltipPos(rect: TargetRect): { top: number; left: number } {
 export default function TourOverlay() {
   const { intro, ativo, feito, passoAtual, confirmarTour, avancar, pular, finalizar } = useTour()
   const [rect, setRect] = useState<TargetRect | null>(null)
+  const [fadingOut, setFadingOut] = useState(false)
+  const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Fade-out antes de chamar avancar
+  const handleAvancar = useCallback(() => {
+    setFadingOut(true)
+    fadeTimer.current = setTimeout(() => {
+      setFadingOut(false)
+      avancar()
+    }, FADE_OUT_MS)
+  }, [avancar])
+
+  useEffect(() => {
+    return () => { if (fadeTimer.current) clearTimeout(fadeTimer.current) }
+  }, [])
 
   // Encontra o elemento e posiciona o anel ao mudar de passo
   useEffect(() => {
@@ -40,6 +56,12 @@ export default function TourOverlay() {
     setRect(null)
 
     const step = TOUR_STEPS[passoAtual]
+    const anteriorRota = passoAtual > 0 ? TOUR_STEPS[passoAtual - 1].rota : null
+    const mudouPagina = anteriorRota !== null && anteriorRota !== step.rota
+
+    // Espera a animação da página terminar ao trocar de aba (page-in = 250ms)
+    const delay = passoAtual === 0 ? 400 : mudouPagina ? 500 : 150
+
     let attempts = 0
     const timers: ReturnType<typeof setTimeout>[] = []
 
@@ -61,7 +83,6 @@ export default function TourOverlay() {
       }
     }
 
-    const delay = passoAtual === 0 ? 400 : 150
     const t = setTimeout(tryFind, delay)
     timers.push(t)
 
@@ -93,7 +114,7 @@ export default function TourOverlay() {
   if (intro) {
     return createPortal(
       <div className="fixed inset-0 bg-black/75 z-[9998] flex items-center justify-center p-6">
-        <div key="intro" className="tour-in bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
+        <div className="tour-in bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
           <div className="text-4xl mb-4">🗺️</div>
           <h2 className="text-base font-bold text-white mb-2">Quer um tour rápido?</h2>
           <p className="text-xs text-slate-400 leading-relaxed mb-6">
@@ -121,7 +142,7 @@ export default function TourOverlay() {
   if (feito) {
     return createPortal(
       <div className="fixed inset-0 bg-black/75 z-[9998] flex items-center justify-center p-6">
-        <div key="feito" className="tour-in bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
+        <div className="tour-in bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-xs text-center shadow-xl">
           <div className="text-4xl mb-4">🎉</div>
           <h2 className="text-base font-bold text-white mb-2">Tour concluído!</h2>
           <p className="text-xs text-slate-400 leading-relaxed mb-2">
@@ -160,6 +181,7 @@ export default function TourOverlay() {
     boxShadow: '0 0 0 9999px rgba(0,0,0,0.75)',
     zIndex: 9998,
     pointerEvents: 'none',
+    transition: 'top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease',
   }
 
   const tooltipStyle: React.CSSProperties = {
@@ -176,7 +198,7 @@ export default function TourOverlay() {
       <div
         key={passoAtual}
         style={tooltipStyle}
-        className="tour-in bg-slate-900 border border-indigo-500/40 rounded-2xl p-4 shadow-xl"
+        className={`${fadingOut ? 'tour-out' : 'tour-in'} bg-slate-900 border border-indigo-500/40 rounded-2xl p-4 shadow-xl`}
       >
         <div className="flex items-start justify-between gap-2 mb-2">
           <p className="text-xs text-indigo-400 font-semibold">
@@ -194,8 +216,9 @@ export default function TourOverlay() {
         <p className="text-xs text-slate-400 leading-relaxed mb-4">{step.texto}</p>
 
         <button
-          onClick={avancar}
-          className="w-full bg-indigo-600 hover:bg-indigo-500 rounded-xl py-2.5 text-sm font-semibold text-white transition-colors"
+          onClick={handleAvancar}
+          disabled={fadingOut}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl py-2.5 text-sm font-semibold text-white transition-colors"
         >
           {isUltimo ? 'Concluir →' : 'Próximo →'}
         </button>
