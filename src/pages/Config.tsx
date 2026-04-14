@@ -4,6 +4,7 @@ import { useAtualizarPerfil } from '../hooks/useAtualizarPerfil'
 import { useAuth } from '../contexts/AuthContext'
 import { useTour } from '../contexts/TourContext'
 import { useWhatsNewContext } from '../contexts/WhatsNewContext'
+import ReportSheet from '../components/config/ReportSheet'
 import CampoEditavel from '../components/config/CampoEditavel'
 import type { Perfil } from '../types'
 
@@ -88,6 +89,7 @@ export default function Config() {
   const { user, signOut } = useAuth()
   const { iniciar } = useTour()
   const { forcarAbrir: abrirWhatsNew } = useWhatsNewContext()
+  const [reportAberto, setReportAberto] = useState(false)
 
   const [comoRecebe, setComoRecebe] = useState<string[]>([])
   const [ondeGuarda, setOndeGuarda] = useState<string[]>([])
@@ -234,12 +236,20 @@ export default function Config() {
           <p className="text-sm text-slate-200">{user?.email}</p>
         </div>
         <button
+          onClick={() => setReportAberto(true)}
+          className="w-full px-4 py-3 text-left text-sm text-slate-300 hover:bg-slate-800 transition-colors border-b border-slate-800"
+        >
+          🐛 Relatar problema
+        </button>
+        <button
           onClick={signOut}
           className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-slate-800 transition-colors"
         >
           Sair da conta
         </button>
       </div>
+
+      {reportAberto && <ReportSheet onFechar={() => setReportAberto(false)} />}
 
       {import.meta.env.DEV && (
         <div className="mt-6">
