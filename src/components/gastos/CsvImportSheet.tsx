@@ -3,6 +3,11 @@ import type { PreviewImport } from '../../hooks/useImportarCsv'
 import type { Categoria } from '../../types'
 import { formatBRL } from '../../lib/fmt'
 
+const LABEL_GASTOS: Record<PreviewImport['tipo'], string> = {
+  credito: 'gastos da fatura',
+  pix:     'gastos deste mês',
+}
+
 const ICONES: Record<Categoria, string> = {
   alimentacao: '🍔',
   transporte:  '🚗',
@@ -39,7 +44,7 @@ export default function CsvImportSheet({
         <div className="w-10 h-1 bg-slate-700 rounded-full mx-auto mb-5" />
 
         <div className="text-center mb-5">
-          <p className="text-base font-bold">{preview.gastos.length} gastos deste mês</p>
+          <p className="text-base font-bold">{preview.gastos.length} {LABEL_GASTOS[preview.tipo]}</p>
           <p className="text-sm text-slate-400 mt-0.5">Total: {formatBRL(preview.totalGeral)}</p>
           {preview.ignoradosOutroMes > 0 && (
             <p className="text-xs text-slate-600 mt-1">
