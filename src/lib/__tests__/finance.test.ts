@@ -8,6 +8,7 @@ describe('calcularSaldo', () => {
       tipoReserva: 'buffer',
       totalEntradasNoMes: 500,
       totalGastoNoMes: 800,
+      netMovimentosReserva: 0,
     })).toBe(1700) // 2000 + 500 - 800
   })
 
@@ -17,6 +18,7 @@ describe('calcularSaldo', () => {
       tipoReserva: 'reserva',
       totalEntradasNoMes: 500,
       totalGastoNoMes: 800,
+      netMovimentosReserva: 0,
     })).toBe(-300) // 0 + 500 - 800
   })
 
@@ -26,6 +28,7 @@ describe('calcularSaldo', () => {
       tipoReserva: null,
       totalEntradasNoMes: 0,
       totalGastoNoMes: 600,
+      netMovimentosReserva: 0,
     })).toBe(-600)
   })
 
@@ -36,6 +39,7 @@ describe('calcularSaldo', () => {
       tipoReserva: null,
       totalEntradasNoMes: 3000,
       totalGastoNoMes: 700,
+      netMovimentosReserva: 0,
     })).toBe(2300)
   })
 
@@ -45,6 +49,7 @@ describe('calcularSaldo', () => {
       tipoReserva: null,
       totalEntradasNoMes: 1000,
       totalGastoNoMes: 1000,
+      netMovimentosReserva: 0,
     })).toBe(0)
   })
 })
