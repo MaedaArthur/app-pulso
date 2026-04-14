@@ -2,6 +2,7 @@ import { usePerfil } from './usePerfil'
 import { useEntradas } from './useEntradas'
 import { useGastos } from './useGastos'
 import { useTotalEntradasHistorico, useTotalGastosHistorico } from './useHistorico'
+import { useMovimentacoesReserva } from './useMovimentacoesReserva'
 import { calcularSaldo, estadoDoMes, ritmoDeMes, calcularSaudeReserva, calcularProjecaoMeta } from '../lib/finance'
 import type { ResultadoRitmo, SaudeReserva, ProjecaoMeta } from '../lib/finance'
 import { diasTotaisDoMes, diasPassadosNoMes } from '../lib/datas'
@@ -28,6 +29,8 @@ export interface ResultadoSaldo {
   saudeReserva: SaudeReserva | null
   metaPoupancaMensal: number
   projecaoMeta: ProjecaoMeta | null
+  reservaTotal: number
+  netMovimentosReserva: number
   isLoading: boolean
 }
 
@@ -37,8 +40,11 @@ export function useSaldo(): ResultadoSaldo {
   const { data: gastos = [], isLoading: gastosLoading } = useGastos()
   const { data: totalEntradasHistorico = 0, isLoading: entradasHistLoading } = useTotalEntradasHistorico()
   const { data: totalGastosHistorico = 0, isLoading: gastosHistLoading } = useTotalGastosHistorico()
+  const { data: movimentacoes = [], isLoading: movimentacoesLoading } = useMovimentacoesReserva()
 
-  const isLoading = perfilLoading || entradasLoading || gastosLoading || entradasHistLoading || gastosHistLoading
+  const isLoading = perfilLoading || entradasLoading || gastosLoading || entradasHistLoading || gastosHistLoading || movimentacoesLoading
+
+  const netMovimentosReserva = movimentacoes.reduce((sum, m) => sum + m.valor, 0)
 
   // Totais mensais — usados no resumo, ritmo e categorias
   const totalEntradas = entradas.reduce((sum, e) => sum + e.valor, 0)
@@ -52,6 +58,7 @@ export function useSaldo(): ResultadoSaldo {
     tipoReserva,
     totalEntradasNoMes: totalEntradasHistorico,
     totalGastoNoMes: totalGastosHistorico,
+    netMovimentosReserva,
   })
 
   const metaPoupancaMensal = perfil?.meta_poupanca_mensal ?? 0
@@ -64,9 +71,11 @@ export function useSaldo(): ResultadoSaldo {
     diasTotaisMes: diasTotaisDoMes(),
   })
 
-  const saudeReserva = tipoReserva === 'reserva' && (perfil?.dinheiro_guardado ?? 0) > 0
+  const reservaTotal = (perfil?.dinheiro_guardado ?? 0) + netMovimentosReserva
+
+  const saudeReserva = reservaTotal > 0
     ? calcularSaudeReserva({
-        dinheiroGuardado: perfil!.dinheiro_guardado,
+        dinheiroGuardado: reservaTotal,
         gastosFixosMensais: perfil?.gastos_fixos_mensais ?? 0,
         saldoMes: saldoReal,
       })
@@ -121,6 +130,8 @@ export function useSaldo(): ResultadoSaldo {
     saudeReserva,
     metaPoupancaMensal,
     projecaoMeta,
+    reservaTotal,
+    netMovimentosReserva,
     isLoading,
   }
 }

@@ -28,7 +28,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'reserva',
     rota: '/',
     titulo: 'Saúde da reserva de emergência',
-    texto: 'Mostra quantos meses de gastos sua reserva cobre. O ideal é manter pelo menos 3 meses. Atualize o valor guardado em Configurações.',
+    texto: 'Mostra quantos meses de gastos sua reserva cobre. O ideal é manter pelo menos 3 meses. Gerencie sua reserva na aba 🔒 Reserva.',
   },
   {
     id: 'resumo',
@@ -65,6 +65,12 @@ export const TOUR_STEPS: TourStep[] = [
     rota: '/gastos',
     titulo: 'Crie e personalize suas categorias',
     texto: 'Aqui você cria categorias próprias com emoji, troca o emoji de qualquer uma e apaga as que não usar mais. Organize do seu jeito.',
+  },
+  {
+    id: 'reserva-tab',
+    rota: '/reserva',
+    titulo: 'Sua reserva de emergência',
+    texto: 'Deposite parte do seu saldo aqui para guardar com segurança. Cada depósito reduz seu saldo disponível e fica registrado no histórico. Retire quando precisar. Se o dinheiro vier de outro banco registre primeiro como entrada e depois deposite aqui.',
   },
   {
     id: 'config-campos',

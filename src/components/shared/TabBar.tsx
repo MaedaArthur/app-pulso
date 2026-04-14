@@ -4,6 +4,7 @@ const abas = [
   { to: '/',         label: 'Início',   icon: '◉' },
   { to: '/entradas', label: 'Entradas', icon: '💰' },
   { to: '/gastos',   label: 'Gastos',   icon: '📄' },
+  { to: '/reserva',  label: 'Reserva',  icon: '🔒' },
   { to: '/config',   label: 'Config',   icon: '⚙️' },
 ]
 

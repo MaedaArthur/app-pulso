@@ -5,12 +5,13 @@ export function calcularSaldo(params: {
   tipoReserva: 'buffer' | 'reserva' | 'poupanca' | null
   totalEntradasNoMes: number
   totalGastoNoMes: number // transações reais (CSV/manual) — já inclui gastos fixos
+  netMovimentosReserva: number // depósitos - retiradas feitos pelo app
   // NOTA: metaPoupancaMensal e gastos_fixos_mensais não entram aqui.
   // Meta é uma aspiração exibida separadamente — subtrair causaria falso vermelho
   // para quem recebe no fim do mês. gastos_fixos só é usado no ritmoDeMes.
 }): number {
   const base = params.tipoReserva === 'buffer' ? params.dinheiroGuardado : 0
-  return base + params.totalEntradasNoMes - params.totalGastoNoMes
+  return base + params.totalEntradasNoMes - params.totalGastoNoMes - params.netMovimentosReserva
 }
 
 export function estadoDoMes(params: {

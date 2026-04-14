@@ -1,8 +1,6 @@
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { SaudeReserva } from '../../lib/finance'
-import type { Perfil } from '../../types'
 import { formatBRL } from '../../lib/fmt'
-import { useAtualizarPerfil } from '../../hooks/useAtualizarPerfil'
 
 const ESTADO_COR: Record<SaudeReserva['estado'], string> = {
   verde:    'text-emerald-400',
@@ -18,13 +16,11 @@ const ESTADO_BARRA: Record<SaudeReserva['estado'], string> = {
 
 interface Props {
   saude: SaudeReserva
-  perfil: Perfil
+  reservaTotal: number
 }
 
-export default function ReservaCard({ saude, perfil }: Props) {
-  const [editando, setEditando] = useState(false)
-  const [input, setInput] = useState('')
-  const { mutate: atualizar, isPending } = useAtualizarPerfil()
+export default function ReservaCard({ saude, reservaTotal }: Props) {
+  const navigate = useNavigate()
 
   const meses = saude.mesesCobertos
   const mesesFormatado = meses >= 12
@@ -33,48 +29,16 @@ export default function ReservaCard({ saude, perfil }: Props) {
 
   const porcentBarra = Math.min(1, meses / 6) * 100
 
-  function abrir() {
-    setInput(String(perfil.dinheiro_guardado))
-    setEditando(true)
-  }
-
-  function salvar() {
-    const novo = parseFloat(input.replace(',', '.'))
-    if (isNaN(novo) || novo < 0) return
-    atualizar({ dinheiro_guardado: novo }, { onSuccess: () => setEditando(false) })
-  }
-
   return (
     <div data-tour="reserva" className="bg-slate-900 rounded-2xl p-4 mb-4">
       <div className="flex items-center justify-between mb-1">
         <p className="text-sm font-semibold">🔒 Reserva</p>
-
-        {editando ? (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">R$</span>
-            <input
-              type="number"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') salvar() }}
-              className="w-24 bg-slate-800 rounded-lg px-2 py-1 text-sm font-semibold text-right focus:outline-none"
-              autoFocus
-            />
-            <button
-              onClick={salvar}
-              disabled={isPending}
-              className="text-xs bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-lg px-2 py-1 transition-colors"
-            >
-              {isPending ? '...' : 'Ok'}
-            </button>
-            <button onClick={() => setEditando(false)} className="text-xs text-slate-500">✕</button>
-          </div>
-        ) : (
-          <button onClick={abrir} className="flex items-center gap-1.5 group">
-            <p className="text-sm font-bold text-slate-200">{formatBRL(perfil.dinheiro_guardado)}</p>
-            <span className="text-xs text-slate-600 group-hover:text-slate-400 transition-colors">editar</span>
-          </button>
-        )}
+        <button
+          onClick={() => navigate('/reserva')}
+          className="text-xs text-slate-500 hover:text-indigo-400 transition-colors"
+        >
+          {formatBRL(reservaTotal)} · gerenciar →
+        </button>
       </div>
 
       <div className="flex items-center justify-between mb-2">
