@@ -123,11 +123,44 @@ export function useCategoriasCustom() {
     },
   })
 
+  const atualizarNome = useMutation({
+    mutationFn: async ({ id, nomeAntigo, nomeNovo }: { id: string; nomeAntigo: string; nomeNovo: string }) => {
+      const { error: erroCat } = await supabase
+        .from('categorias_custom')
+        .update({ nome: nomeNovo })
+        .eq('id', id)
+        .eq('user_id', user!.id)
+      if (erroCat) throw erroCat
+
+      // Atualiza gastos que usavam o nome antigo
+      const { error: erroGastos } = await supabase
+        .from('gastos')
+        .update({ categoria: nomeNovo })
+        .eq('user_id', user!.id)
+        .eq('categoria', nomeAntigo)
+      if (erroGastos) throw erroGastos
+
+      // Atualiza regras de correção que apontavam para o nome antigo
+      const { error: erroCorrecoes } = await supabase
+        .from('categorias_usuario')
+        .update({ categoria: nomeNovo })
+        .eq('user_id', user!.id)
+        .eq('categoria', nomeAntigo)
+      if (erroCorrecoes) throw erroCorrecoes
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categorias-custom'] })
+      queryClient.invalidateQueries({ queryKey: ['gastos'] })
+      queryClient.invalidateQueries({ queryKey: ['categorias-usuario'] })
+    },
+  })
+
   return {
     data: query.data ?? [],
     criar: criar.mutateAsync,
     deletar: deletar.mutateAsync,
     atualizarEmoji: atualizarEmoji.mutateAsync,
+    atualizarNome: atualizarNome.mutateAsync,
   }
 }
 
