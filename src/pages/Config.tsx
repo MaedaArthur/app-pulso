@@ -239,7 +239,7 @@ export default function Config() {
           onClick={() => setReportAberto(true)}
           className="w-full px-4 py-3 text-left text-sm text-slate-300 hover:bg-slate-800 transition-colors border-b border-slate-800"
         >
-          🐛 Relatar problema
+          📞 Relatar problema
         </button>
         <button
           onClick={signOut}
