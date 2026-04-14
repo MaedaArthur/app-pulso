@@ -29,6 +29,6 @@ dist-ssr
 *.sw?
 
 # Claude / Superpowers
-docs/superpowers/specs/
-docs/superpowers/plans/
 .superpowers/
+docs/superpowers/
+docs/walkthrough/
