@@ -4,6 +4,7 @@ import { useAuth } from './contexts/AuthContext'
 import { usePerfil } from './hooks/usePerfil'
 import { useOnlineStatus } from './hooks/useOnlineStatus'
 import TabBar from './components/shared/TabBar'
+import { usePageTracking } from './hooks/usePageTracking'
 import { TourProvider } from './contexts/TourContext'
 import TourOverlay from './components/tour/TourOverlay'
 import { WhatsNewProvider } from './contexts/WhatsNewContext'
@@ -47,6 +48,7 @@ function OnboardingGuard() {
 
 function AppLayout() {
   const isOnline = useOnlineStatus()
+  usePageTracking()
 
   return (
     <TourProvider>

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Perfil } from '../types'
+import { track } from '../lib/analytics'
 
 type DadosOnboarding = Pick<
   Perfil,
@@ -22,6 +23,7 @@ export function useOnboarding() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['perfil'] })
+      track('onboarding_completo')
     },
   })
 }

@@ -8,6 +8,7 @@ import { hashGasto } from '../lib/hashGasto'
 import { getMesAtual } from '../lib/datas'
 import { useCorrecoesCategorias } from './useCategorias'
 import type { Categoria } from '../types'
+import { track } from '../lib/analytics'
 
 export interface CategoriaSummary {
   categoria: Categoria
@@ -83,9 +84,10 @@ export function useImportarCsv() {
 
       if (error) throw error
     },
-    onSuccess: () => {
+    onSuccess: (_data, { gastos, substituir }) => {
       queryClient.invalidateQueries({ queryKey: ['gastos'] })
       queryClient.invalidateQueries({ queryKey: ['gastos-historico'] })
+      track('gasto_importado', { quantidade: gastos.length, substituiu: substituir ?? false })
     },
   })
 

@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { track } from '../lib/analytics'
 
 export type TipoReport = 'bug' | 'sugestao' | 'outro'
 
@@ -13,6 +14,9 @@ export function useEnviarReport() {
         .from('reports')
         .insert({ user_id: user!.id, tipo, descricao })
       if (error) throw error
+    },
+    onSuccess: (_data, { tipo }) => {
+      track('report_enviado', { tipo })
     },
   })
 }

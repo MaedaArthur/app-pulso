@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { track } from '../lib/analytics'
 
 interface AuthContextValue {
   user: User | null
@@ -25,9 +26,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
+      if (event === 'SIGNED_IN') track('session_start')
     })
 
     return () => subscription.unsubscribe()

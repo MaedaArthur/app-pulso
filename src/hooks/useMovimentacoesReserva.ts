@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { track } from '../lib/analytics'
 
 export interface MovimentacaoReserva {
   id: string
@@ -43,8 +44,9 @@ export function useAdicionarMovimentacaoReserva() {
         .insert({ user_id: user!.id, valor, descricao: descricao ?? null })
       if (error) throw error
     },
-    onSuccess: () => {
+    onSuccess: (_data, { valor }) => {
       queryClient.invalidateQueries({ queryKey: ['movimentacoes-reserva'] })
+      track('reserva_movimentada', { tipo: valor > 0 ? 'deposito' : 'saque' })
     },
   })
 }
