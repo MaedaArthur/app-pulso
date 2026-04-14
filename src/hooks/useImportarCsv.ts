@@ -25,13 +25,30 @@ export interface PreviewImport {
 
 export async function parseFile(file: File): Promise<PreviewImport> {
   const content = await file.text()
-  const { gastos: todos } = parseCsvNubank(content)
+  const { tipo, gastos: todos } = parseCsvNubank(content)
 
-  // Filtra apenas transações do mês atual
-  const agora = new Date()
-  const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}`
-  const gastos = todos.filter(g => g.data.startsWith(mesAtual))
-  const ignoradosOutroMes = todos.length - gastos.length
+  // A fatura do cartão atravessa meses: compras de março aparecem na fatura
+  // que é paga em abril. Então, no import de crédito, mantemos todas as compras
+  // da fatura e reatribuímos ao mês de referência (o mês em que o usuário paga).
+  // Para Pix/débito, ainda filtramos pelo mês atual, pois cada transação é paga
+  // na hora.
+  const { inicio, fim } = getMesAtual()
+  let gastos: GastoParseado[]
+  let ignoradosOutroMes: number
+
+  if (tipo === 'credito') {
+    // Descarta apenas compras futuras (datas >= fim do mês atual). Compras
+    // anteriores ao início do mês são remapeadas para o primeiro dia do mês
+    // de referência.
+    const dentroDaFatura = todos.filter(g => g.data < fim)
+    gastos = dentroDaFatura.map(g =>
+      g.data < inicio ? { ...g, data: inicio } : g
+    )
+    ignoradosOutroMes = todos.length - dentroDaFatura.length
+  } else {
+    gastos = todos.filter(g => g.data >= inicio && g.data < fim)
+    ignoradosOutroMes = todos.length - gastos.length
+  }
 
   const acc: Record<string, CategoriaSummary> = {}
   for (const g of gastos) {
