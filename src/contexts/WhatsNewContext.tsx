@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext } from 'react'
 import { useWhatsNew } from '../hooks/useWhatsNew'
 import WhatsNewSheet from '../components/shared/WhatsNewSheet'
