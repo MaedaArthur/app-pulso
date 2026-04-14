@@ -1,3 +1,4 @@
+// ci-demo: criação de categorias no sheet
 import { useState, useRef } from 'react'
 import { useCategoriasCustom } from '../../hooks/useCategorias'
 
