@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { track } from '../lib/analytics'
 
 interface NovaEntrada {
   valor: number
@@ -22,6 +23,7 @@ export function useAdicionarEntrada() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entradas'] })
       queryClient.invalidateQueries({ queryKey: ['entradas-historico'] })
+      track('entrada_adicionada')
     },
   })
 }

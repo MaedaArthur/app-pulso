@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { normalizarMerchant } from '../lib/categories'
 import type { Categoria } from '../types'
+import { track } from '../lib/analytics'
 
 export function useCorrecoesCategorias() {
   const { user } = useAuth()
@@ -92,6 +93,7 @@ export function useCategoriasCustom() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categorias-custom'] })
+      track('categoria_criada')
     },
   })
 
@@ -106,6 +108,7 @@ export function useCategoriasCustom() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categorias-custom'] })
+      track('categoria_deletada')
     },
   })
 
@@ -152,6 +155,7 @@ export function useCategoriasCustom() {
       queryClient.invalidateQueries({ queryKey: ['categorias-custom'] })
       queryClient.invalidateQueries({ queryKey: ['gastos'] })
       queryClient.invalidateQueries({ queryKey: ['categorias-usuario'] })
+      track('categoria_renomeada')
     },
   })
 

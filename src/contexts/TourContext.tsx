@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAtualizarPerfil } from '../hooks/useAtualizarPerfil'
 import { TOUR_STEPS } from '../components/tour/TOUR_STEPS'
+import { track } from '../lib/analytics'
 
 interface TourContextValue {
   intro: boolean
@@ -37,16 +38,17 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     setAtivo(true)
   }, [])
 
-  const concluir = useCallback(() => {
+  const concluir = useCallback((motivo: 'completo' | 'pulado' = 'completo') => {
     setIntro(false)
     setAtivo(false)
     setFeito(false)
     atualizarPerfil({ tutorial_visto: true })
+    track('tour_' + motivo)
   }, [atualizarPerfil])
 
   const finalizar = useCallback(() => {
     navigate('/')
-    concluir()
+    concluir('completo')
   }, [navigate, concluir])
 
   const avancar = useCallback(() => {
@@ -65,7 +67,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   }, [passoAtual, navigate])
 
   const pular = useCallback(() => {
-    concluir()
+    concluir('pulado')
   }, [concluir])
 
   return (
