@@ -97,6 +97,7 @@ export default function Config() {
   const [tipoReserva, setTipoReserva] = useState('')
   const [chips_sujos, setChipsSujos] = useState(false)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!perfil) return
     setComoRecebe(parseMulti(perfil.como_recebe))
@@ -105,6 +106,7 @@ export default function Config() {
     setTipoReserva(perfil.tipo_reserva ?? '')
     setChipsSujos(false)
   }, [perfil])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function salvarChips() {
     atualizar({

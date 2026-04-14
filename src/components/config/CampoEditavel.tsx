@@ -22,6 +22,7 @@ export default function CampoEditavel({
   const [input, setInput] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (editando) {
       setInput(String(valor))
@@ -29,6 +30,7 @@ export default function CampoEditavel({
       inputRef.current?.select()
     }
   }, [editando, valor])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function confirmar() {
     const novoValor = parseFloat(input.replace(',', '.'))

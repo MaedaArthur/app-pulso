@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // src/contexts/TourContext.tsx
 import { createContext, useContext, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -61,7 +62,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       navigate(proxStep.rota)
     }
     setPassoAtual(proximo)
-  }, [passoAtual, concluir, navigate])
+  }, [passoAtual, navigate])
 
   const pular = useCallback(() => {
     concluir()

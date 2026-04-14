@@ -111,8 +111,10 @@ export function useSaldo(): ResultadoSaldo {
     : null
 
   const SETE_DIAS = 7 * 24 * 60 * 60 * 1000
+  // eslint-disable-next-line react-hooks/purity
+  const agora = Date.now()
   const gastosDesatualizados = ultimoImport
-    ? Date.now() - new Date(ultimoImport).getTime() > SETE_DIAS
+    ? agora - new Date(ultimoImport).getTime() > SETE_DIAS
     : false
 
   return {
