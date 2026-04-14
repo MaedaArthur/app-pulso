@@ -11,6 +11,7 @@ import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
 import Entradas from './pages/Entradas'
 import Gastos from './pages/Gastos'
+import Reserva from './pages/Reserva'
 import Config from './pages/Config'
 
 function LoadingScreen() {
@@ -81,6 +82,7 @@ export const router = createBrowserRouter([
           { path: '/',         element: <Home /> },
           { path: '/entradas', element: <Entradas /> },
           { path: '/gastos',   element: <Gastos /> },
+          { path: '/reserva',  element: <Reserva /> },
           { path: '/config',   element: <Config /> },
         ],
       },

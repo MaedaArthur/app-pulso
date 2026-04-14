@@ -11,7 +11,6 @@ import RitmoDoMes from '../components/home/RitmoDoMes'
 import ResumoEntradaGasto from '../components/home/ResumoEntradaGasto'
 import CategoriasGastos from '../components/home/CategoriasGastos'
 import ReservaCard from '../components/home/ReservaCard'
-import DinheiroGuardadoCard from '../components/home/DinheiroGuardadoCard'
 import MetaCard from '../components/home/MetaCard'
 
 function DevTools() {
@@ -61,6 +60,7 @@ export default function Home() {
     perfil,
     gastosDesatualizados,
     saudeReserva,
+    reservaTotal,
     metaPoupancaMensal,
     projecaoMeta,
     isLoading,
@@ -98,10 +98,6 @@ export default function Home() {
         metaPoupancaMensal={metaPoupancaMensal}
       />
 
-      {!semDados && perfil?.tipo_reserva !== 'reserva' && (
-        <DinheiroGuardadoCard valor={perfil?.dinheiro_guardado ?? 0} />
-      )}
-
       {projecaoMeta && <MetaCard projecao={projecaoMeta} />}
 
       <RitmoDoMes
@@ -112,8 +108,8 @@ export default function Home() {
         diasTotais={diasTotaisDoMes()}
       />
 
-      {saudeReserva && perfil && (
-        <ReservaCard saude={saudeReserva} perfil={perfil} />
+      {saudeReserva && (
+        <ReservaCard saude={saudeReserva} reservaTotal={reservaTotal} />
       )}
 
       <ResumoEntradaGasto
