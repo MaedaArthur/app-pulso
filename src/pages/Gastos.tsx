@@ -9,6 +9,7 @@ import { formatBRL, formatDataCurta } from '../lib/fmt'
 import CsvTutorialModal from '../components/gastos/CsvTutorialModal'
 import CsvImportSheet from '../components/gastos/CsvImportSheet'
 import CategoriaCard from '../components/gastos/CategoriaCard'
+import GerenciarCategoriasSheet from '../components/gastos/GerenciarCategoriasSheet'
 
 type EstadoImport = 'idle' | 'tutorial' | 'preview'
 
@@ -31,6 +32,7 @@ export default function Gastos() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [estadoImport, setEstadoImport] = useState<EstadoImport>('idle')
   const [preview, setPreview] = useState<PreviewImport | null>(null)
+  const [gerenciandoCategorias, setGerenciandoCategorias] = useState(false)
 
   const grupos = agruparPorCategoria(gastos)
   const totalGastos = gastos.reduce((sum, g) => sum + g.valor, 0)
@@ -83,6 +85,14 @@ export default function Gastos() {
         </div>
 
         <div className="flex items-center gap-2 mt-1">
+          <button
+            data-tour="gerenciar-categorias"
+            onClick={() => setGerenciandoCategorias(true)}
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-300 transition-colors"
+          >
+            <span>🏷️</span>
+            <span>Categorias</span>
+          </button>
           {temGastos && (
             <button
               onClick={abrirSeletorArquivo}
@@ -138,6 +148,10 @@ export default function Gastos() {
           isFirst={idx === 0}
         />
       ))}
+
+      {gerenciandoCategorias && (
+        <GerenciarCategoriasSheet onFechar={() => setGerenciandoCategorias(false)} />
+      )}
 
       {estadoImport === 'tutorial' && (
         <CsvTutorialModal
