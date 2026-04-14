@@ -2,17 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Categoria } from '../../types'
 import type { GastosPorCategoria } from '../../hooks/useSaldo'
 import { formatBRL } from '../../lib/fmt'
-
-const ICONES: Record<Categoria, string> = {
-  alimentacao: '🍔',
-  transporte:  '🚗',
-  moradia:     '🏠',
-  saude:       '💊',
-  lazer:       '🎮',
-  assinaturas: '📱',
-  educacao:    '📚',
-  outros:      '📦',
-}
+import { useEmojis } from '../../hooks/useEmojis'
 
 const CORES: Record<Categoria, string> = {
   alimentacao: 'bg-amber-500',
@@ -32,6 +22,7 @@ interface Props {
 
 export default function CategoriasGastos({ gastosPorCategoria, totalGastos }: Props) {
   const navigate = useNavigate()
+  const { getEmoji } = useEmojis()
 
   if (gastosPorCategoria.length === 0) {
     return (
@@ -61,7 +52,7 @@ export default function CategoriasGastos({ gastosPorCategoria, totalGastos }: Pr
             <div key={categoria}>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-sm">
-                  {ICONES[cat]} {categoria}
+                  {getEmoji(cat)} {categoria}
                 </span>
                 <span className="text-sm font-medium text-red-400">{formatBRL(total)}</span>
               </div>

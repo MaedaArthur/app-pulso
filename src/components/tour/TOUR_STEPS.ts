@@ -61,6 +61,12 @@ export const TOUR_STEPS: TourStep[] = [
     texto: 'Se o app categorizar algo errado, toque no lápis e corrija. Ele aprende: da próxima vez que aparecer o mesmo estabelecimento, já vai certo.',
   },
   {
+    id: 'gerenciar-categorias',
+    rota: '/gastos',
+    titulo: 'Crie e personalize suas categorias',
+    texto: 'Aqui você cria categorias próprias com emoji, troca o emoji de qualquer uma e apaga as que não usar mais. Organize do seu jeito.',
+  },
+  {
     id: 'config-campos',
     rota: '/config',
     titulo: 'Mantenha seus números atualizados',

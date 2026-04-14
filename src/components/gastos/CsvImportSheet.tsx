@@ -1,18 +1,7 @@
 import { useState } from 'react'
 import type { PreviewImport } from '../../hooks/useImportarCsv'
-import type { Categoria } from '../../types'
 import { formatBRL } from '../../lib/fmt'
-
-const ICONES: Record<Categoria, string> = {
-  alimentacao: '🍔',
-  transporte:  '🚗',
-  moradia:     '🏠',
-  saude:       '💊',
-  lazer:       '🎮',
-  assinaturas: '📱',
-  educacao:    '📚',
-  outros:      '📦',
-}
+import { useEmojis } from '../../hooks/useEmojis'
 
 interface Props {
   preview: PreviewImport
@@ -30,6 +19,7 @@ export default function CsvImportSheet({
   isPending,
 }: Props) {
   const [substituir, setSubstituir] = useState(false)
+  const { getEmoji } = useEmojis()
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
@@ -55,7 +45,7 @@ export default function CsvImportSheet({
               className="flex items-center justify-between bg-slate-800 rounded-xl px-4 py-3"
             >
               <div className="flex items-center gap-2">
-                <span>{ICONES[categoria]}</span>
+                <span>{getEmoji(categoria)}</span>
                 <span className="text-sm capitalize">{categoria}</span>
                 <span className="text-xs text-slate-500">{count} itens</span>
               </div>

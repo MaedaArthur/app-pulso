@@ -59,29 +59,35 @@ export function useAtualizarCategoriaGasto() {
   })
 }
 
+export interface CategoriaCustom {
+  id: string
+  nome: string
+  emoji: string
+}
+
 export function useCategoriasCustom() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
   const query = useQuery({
     queryKey: ['categorias-custom', user?.id],
-    queryFn: async (): Promise<string[]> => {
+    queryFn: async (): Promise<CategoriaCustom[]> => {
       const { data, error } = await supabase
         .from('categorias_custom')
-        .select('nome')
+        .select('id, nome, emoji')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: true })
       if (error) throw error
-      return data.map(r => r.nome)
+      return data as CategoriaCustom[]
     },
     enabled: !!user,
   })
 
-  const mutation = useMutation({
-    mutationFn: async (nome: string) => {
+  const criar = useMutation({
+    mutationFn: async ({ nome, emoji }: { nome: string; emoji: string }) => {
       const { error } = await supabase
         .from('categorias_custom')
-        .insert({ user_id: user!.id, nome })
+        .insert({ user_id: user!.id, nome, emoji })
       if (error) throw error
     },
     onSuccess: () => {
@@ -89,7 +95,40 @@ export function useCategoriasCustom() {
     },
   })
 
-  return { data: query.data ?? [], criar: mutation.mutateAsync }
+  const deletar = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('categorias_custom')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user!.id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categorias-custom'] })
+    },
+  })
+
+  const atualizarEmoji = useMutation({
+    mutationFn: async ({ id, emoji }: { id: string; emoji: string }) => {
+      const { error } = await supabase
+        .from('categorias_custom')
+        .update({ emoji })
+        .eq('id', id)
+        .eq('user_id', user!.id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categorias-custom'] })
+    },
+  })
+
+  return {
+    data: query.data ?? [],
+    criar: criar.mutateAsync,
+    deletar: deletar.mutateAsync,
+    atualizarEmoji: atualizarEmoji.mutateAsync,
+  }
 }
 
 // Combina correção de categoria + regra de merchant numa operação só

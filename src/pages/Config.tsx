@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { usePerfil } from '../hooks/usePerfil'
 import { useAtualizarPerfil } from '../hooks/useAtualizarPerfil'
 import { useAuth } from '../contexts/AuthContext'
+import { useTour } from '../contexts/TourContext'
+import { useWhatsNewContext } from '../contexts/WhatsNewContext'
 import CampoEditavel from '../components/config/CampoEditavel'
 import type { Perfil } from '../types'
 
@@ -84,6 +86,8 @@ export default function Config() {
   const { data: perfil, isLoading } = usePerfil()
   const { mutate: atualizar, isPending } = useAtualizarPerfil()
   const { user, signOut } = useAuth()
+  const { iniciar } = useTour()
+  const { forcarAbrir: abrirWhatsNew } = useWhatsNewContext()
 
   const [comoRecebe, setComoRecebe] = useState<string[]>([])
   const [ondeGuarda, setOndeGuarda] = useState<string[]>([])
@@ -236,6 +240,26 @@ export default function Config() {
           Sair da conta
         </button>
       </div>
+
+      {import.meta.env.DEV && (
+        <div className="mt-6">
+          <p className="text-xs text-slate-600 uppercase tracking-wide mb-3">Desenvolvimento</p>
+          <div className="bg-slate-900 rounded-2xl overflow-hidden">
+            <button
+              onClick={iniciar}
+              className="w-full px-4 py-3 text-left text-sm text-slate-400 hover:bg-slate-800 transition-colors border-b border-slate-800"
+            >
+              🗺️ Reiniciar tour
+            </button>
+            <button
+              onClick={abrirWhatsNew}
+              className="w-full px-4 py-3 text-left text-sm text-slate-400 hover:bg-slate-800 transition-colors"
+            >
+              🎉 Ver novidades
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

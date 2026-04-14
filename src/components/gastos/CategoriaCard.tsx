@@ -3,25 +3,17 @@ import type { Categoria, Gasto } from '../../types'
 import type { GastosPorCategoria } from '../../hooks/useSaldo'
 import { TODAS_CATEGORIAS } from '../../lib/categories'
 import { useAtualizarCategoriaGasto, useSalvarCorrecao, useCategoriasCustom } from '../../hooks/useCategorias'
+import { useEmojis } from '../../hooks/useEmojis'
 import { normalizarMerchant } from '../../lib/categories'
 import { formatBRL, formatDataCurta } from '../../lib/fmt'
 
-const ICONES_PADRAO: Record<string, string> = {
-  alimentacao: '🍔',
-  transporte:  '🚗',
-  moradia:     '🏠',
-  saude:       '💊',
-  lazer:       '🎮',
-  assinaturas: '📱',
-  educacao:    '📚',
-  outros:      '📦',
-}
-
-export const ICONES = new Proxy(ICONES_PADRAO, {
-  get(target, key: string) {
-    return target[key] ?? '🏷️'
-  },
-})
+const EMOJIS_CRIACAO = [
+  '🏷️','🍔','🍕','🍣','🥗','🛒','☕','🍺',
+  '🚗','🚌','✈️','⛽','🏠','🏡','💡','🔧',
+  '💊','🏥','🧴','🏋️','🎮','🎬','🎵','📖',
+  '📱','💻','📚','🎓','🛍️','👗','🐾','🎁',
+  '💰','💳','⚽','🌿','🧹','🎯','🧃','🎲',
+]
 
 const CORES_BARRA_PADRAO: Record<string, string> = {
   alimentacao: 'bg-amber-500',
@@ -48,10 +40,12 @@ function ItemGasto({ gasto }: ItemGastoProps) {
   const [editandoCategoria, setEditandoCategoria] = useState(false)
   const [criandoCategoria, setCriandoCategoria] = useState(false)
   const [novaCategoria, setNovaCategoria] = useState('')
+  const [novoEmoji, setNovoEmoji] = useState('🏷️')
   const inputRef = useRef<HTMLInputElement>(null)
   const { mutate: atualizarGasto, isPending } = useAtualizarCategoriaGasto()
   const { mutate: salvarCorrecao } = useSalvarCorrecao()
   const { data: categoriasCustom, criar: criarCategoriaCustom } = useCategoriasCustom()
+  const { getEmoji } = useEmojis()
 
   function handleSelecionarCategoria(cat: Categoria) {
     if (cat === gasto.categoria) {
@@ -68,9 +62,10 @@ function ItemGasto({ gasto }: ItemGastoProps) {
     const nome = novaCategoria.trim().toLowerCase()
     if (!nome) return
     try {
-      await criarCategoriaCustom(nome)
+      await criarCategoriaCustom({ nome, emoji: novoEmoji })
       handleSelecionarCategoria(nome)
       setNovaCategoria('')
+      setNovoEmoji('🏷️')
       setCriandoCategoria(false)
     } catch (err) {
       console.error('[categorias-custom] erro ao criar categoria:', err)
@@ -80,10 +75,11 @@ function ItemGasto({ gasto }: ItemGastoProps) {
 
   function handleAbrirCriacao() {
     setCriandoCategoria(true)
+    setNovoEmoji('🏷️')
     setTimeout(() => inputRef.current?.focus(), 50)
   }
 
-  const todasCategorias = [...TODAS_CATEGORIAS, ...categoriasCustom]
+  const todasCategorias = [...TODAS_CATEGORIAS, ...categoriasCustom.map(c => c.nome)]
 
   return (
     <div className="border-b border-slate-800/50 last:border-0">
@@ -115,33 +111,49 @@ function ItemGasto({ gasto }: ItemGastoProps) {
                   : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-300'
               }`}
             >
-              {ICONES[cat]} {cat}
+              {getEmoji(cat)} {cat}
             </button>
           ))}
 
           {criandoCategoria ? (
-            <div className="flex items-center gap-1 mt-0.5">
-              <input
-                ref={inputRef}
-                value={novaCategoria}
-                onChange={e => setNovaCategoria(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleCriarCategoria()}
-                placeholder="nome da categoria"
-                className="text-xs px-2.5 py-1 rounded-full border border-indigo-500 bg-slate-800 text-slate-200 outline-none w-36"
-              />
-              <button
-                onClick={handleCriarCategoria}
-                disabled={!novaCategoria.trim()}
-                className="text-xs px-2.5 py-1 rounded-full bg-indigo-600 text-white disabled:opacity-40"
-              >
-                ✓
-              </button>
-              <button
-                onClick={() => { setCriandoCategoria(false); setNovaCategoria('') }}
-                className="text-xs px-2.5 py-1 rounded-full border border-slate-700 text-slate-400"
-              >
-                ✕
-              </button>
+            <div className="w-full mt-1 space-y-2">
+              <div className="flex flex-wrap gap-1.5 p-2 bg-slate-800/60 rounded-xl">
+                {EMOJIS_CRIACAO.map(emoji => (
+                  <button
+                    key={emoji}
+                    onClick={() => setNovoEmoji(emoji)}
+                    className={`text-base w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${
+                      emoji === novoEmoji ? 'bg-indigo-600' : 'bg-slate-700 hover:bg-slate-600'
+                    }`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-base w-7 text-center shrink-0">{novoEmoji}</span>
+                <input
+                  ref={inputRef}
+                  value={novaCategoria}
+                  onChange={e => setNovaCategoria(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleCriarCategoria()}
+                  placeholder="nome da categoria"
+                  className="text-xs px-2.5 py-1 rounded-full border border-indigo-500 bg-slate-800 text-slate-200 outline-none flex-1 min-w-0"
+                />
+                <button
+                  onClick={handleCriarCategoria}
+                  disabled={!novaCategoria.trim()}
+                  className="text-xs px-2.5 py-1 rounded-full bg-indigo-600 text-white disabled:opacity-40 shrink-0"
+                >
+                  ✓
+                </button>
+                <button
+                  onClick={() => { setCriandoCategoria(false); setNovaCategoria(''); setNovoEmoji('🏷️') }}
+                  className="text-xs px-2.5 py-1 rounded-full border border-slate-700 text-slate-400 shrink-0"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           ) : (
             <button
@@ -165,6 +177,7 @@ interface Props {
 
 export default function CategoriaCard({ grupo, totalGeral, isFirst }: Props) {
   const [expandido, setExpandido] = useState(false)
+  const { getEmoji } = useEmojis()
   const cat = grupo.categoria as Categoria
   const porcent = totalGeral > 0 ? (grupo.total / totalGeral) * 100 : 0
 
@@ -174,7 +187,7 @@ export default function CategoriaCard({ grupo, totalGeral, isFirst }: Props) {
         className="w-full px-4 py-4 flex items-center gap-3 text-left"
         onClick={() => setExpandido(e => !e)}
       >
-        <span className="text-xl">{ICONES[cat]}</span>
+        <span className="text-xl">{getEmoji(cat)}</span>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center mb-1.5">
             <span className="text-sm font-semibold capitalize">{cat}</span>
