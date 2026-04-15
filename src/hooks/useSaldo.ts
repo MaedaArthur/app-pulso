@@ -3,9 +3,10 @@ import { useEntradas } from './useEntradas'
 import { useGastos } from './useGastos'
 import { useTotalEntradasHistorico, useTotalGastosHistorico } from './useHistorico'
 import { useMovimentacoesReserva } from './useMovimentacoesReserva'
+import { useMesSelecionado } from './useMesSelecionado'
 import { calcularSaldo, estadoDoMes, ritmoDeMes, calcularSaudeReserva, calcularProjecaoMeta } from '../lib/finance'
 import type { ResultadoRitmo, SaudeReserva, ProjecaoMeta } from '../lib/finance'
-import { diasTotaisDoMes, diasPassadosNoMes } from '../lib/datas'
+import { diasTotaisDoMes, diasPassadosNoMes, type TipoMes } from '../lib/datas'
 import type { Entrada, Gasto, Perfil, Categoria, EstadoMes } from '../types'
 
 export interface GastosPorCategoria {
@@ -17,7 +18,8 @@ export interface GastosPorCategoria {
 export interface ResultadoSaldo {
   saldoReal: number
   estado: EstadoMes
-  ritmo: ResultadoRitmo
+  // Cálculos "vivos" — null fora do mês atual (ver Seção 5 do spec).
+  ritmo: ResultadoRitmo | null
   totalEntradas: number
   totalGastos: number
   entradas: Entrada[]
@@ -32,6 +34,9 @@ export interface ResultadoSaldo {
   reservaTotal: number
   netMovimentosReserva: number
   isLoading: boolean
+  // Contexto do mês visualizado.
+  tipoMes: TipoMes
+  isMesAtual: boolean
 }
 
 export function useSaldo(): ResultadoSaldo {
@@ -41,6 +46,7 @@ export function useSaldo(): ResultadoSaldo {
   const { data: totalEntradasHistorico = 0, isLoading: entradasHistLoading } = useTotalEntradasHistorico()
   const { data: totalGastosHistorico = 0, isLoading: gastosHistLoading } = useTotalGastosHistorico()
   const { data: movimentacoes = [], isLoading: movimentacoesLoading } = useMovimentacoesReserva()
+  const { tipo: tipoMes, isMesAtual } = useMesSelecionado()
 
   const isLoading = perfilLoading || entradasLoading || gastosLoading || entradasHistLoading || gastosHistLoading || movimentacoesLoading
 
@@ -63,17 +69,19 @@ export function useSaldo(): ResultadoSaldo {
 
   const metaPoupancaMensal = perfil?.meta_poupanca_mensal ?? 0
 
-  const projecaoMeta = calcularProjecaoMeta({
-    totalEntradasMes: totalEntradas,
-    totalGastosMes: totalGastos,
-    metaPoupancaMensal,
-    diasPassados: diasPassadosNoMes(),
-    diasTotaisMes: diasTotaisDoMes(),
-  })
+  const projecaoMeta = isMesAtual
+    ? calcularProjecaoMeta({
+        totalEntradasMes: totalEntradas,
+        totalGastosMes: totalGastos,
+        metaPoupancaMensal,
+        diasPassados: diasPassadosNoMes(),
+        diasTotaisMes: diasTotaisDoMes(),
+      })
+    : null
 
   const reservaTotal = (perfil?.dinheiro_guardado ?? 0) + netMovimentosReserva
 
-  const saudeReserva = reservaTotal > 0
+  const saudeReserva = isMesAtual && reservaTotal > 0
     ? calcularSaudeReserva({
         dinheiroGuardado: reservaTotal,
         gastosFixosMensais: perfil?.gastos_fixos_mensais ?? 0,
@@ -86,13 +94,15 @@ export function useSaldo(): ResultadoSaldo {
     rendaMensalEstimada: perfil?.renda_mensal_estimada ?? 0,
   })
 
-  const ritmo = ritmoDeMes({
-    totalGastoNoMes: totalGastos,
-    gastoFixosMensais: perfil?.gastos_fixos_mensais ?? 0,
-    rendaMensalEstimada: perfil?.renda_mensal_estimada ?? 0,
-    diasPassados: diasPassadosNoMes(),
-    diasTotaisMes: diasTotaisDoMes(),
-  })
+  const ritmo = isMesAtual
+    ? ritmoDeMes({
+        totalGastoNoMes: totalGastos,
+        gastoFixosMensais: perfil?.gastos_fixos_mensais ?? 0,
+        rendaMensalEstimada: perfil?.renda_mensal_estimada ?? 0,
+        diasPassados: diasPassadosNoMes(),
+        diasTotaisMes: diasTotaisDoMes(),
+      })
+    : null
 
   const gastosPorCategoria: GastosPorCategoria[] = Object.entries(
     gastos.reduce((acc, g) => {
@@ -113,7 +123,9 @@ export function useSaldo(): ResultadoSaldo {
   const SETE_DIAS = 7 * 24 * 60 * 60 * 1000
   // eslint-disable-next-line react-hooks/purity
   const agora = Date.now()
-  const gastosDesatualizados = ultimoImport
+  // Só alerta "gastos desatualizados" no mês atual — em meses passados/futuros
+  // o conceito não se aplica.
+  const gastosDesatualizados = isMesAtual && ultimoImport
     ? agora - new Date(ultimoImport).getTime() > SETE_DIAS
     : false
 
@@ -135,5 +147,7 @@ export function useSaldo(): ResultadoSaldo {
     reservaTotal,
     netMovimentosReserva,
     isLoading,
+    tipoMes,
+    isMesAtual,
   }
 }

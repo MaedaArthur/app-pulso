@@ -5,7 +5,7 @@ import { parseCsvNubank } from '../lib/csvParser'
 import type { GastoParseado } from '../lib/csvParser'
 import { categorizar } from '../lib/categories'
 import { hashGasto } from '../lib/hashGasto'
-import { getMesAtual } from '../lib/datas'
+import { mesAtualIso, normalizarMesReferencia } from '../lib/datas'
 import { useCorrecoesCategorias } from './useCategorias'
 import type { Categoria } from '../types'
 import { track } from '../lib/analytics'
@@ -17,38 +17,38 @@ export interface CategoriaSummary {
 }
 
 export interface PreviewImport {
+  tipo: 'credito' | 'pix'
   gastos: GastoParseado[]
   porCategoria: CategoriaSummary[]
   totalGeral: number
-  ignoradosOutroMes: number
+  mesReferenciaSugerido: string // "YYYY-MM-01"
+  mesesDistintos: number        // quantidade de meses distintos nas compras
+  aviso?: string                // aviso opcional quando CSV abrange ≥3 meses
+}
+
+function sugerirMesReferencia(gastos: GastoParseado[]): string {
+  if (gastos.length === 0) {
+    return normalizarMesReferencia(new Date())
+  }
+  // Mês da compra mais recente = mês em que a fatura (ou os gastos pix) é paga.
+  const maisRecente = gastos.reduce((max, g) => (g.data > max ? g.data : max), gastos[0].data)
+  return normalizarMesReferencia(maisRecente)
+}
+
+function contarMesesDistintos(gastos: GastoParseado[]): number {
+  const s = new Set(gastos.map(g => g.data.slice(0, 7)))
+  return s.size
 }
 
 export async function parseFile(file: File): Promise<PreviewImport> {
   const content = await file.text()
-  const { tipo, gastos: todos } = parseCsvNubank(content)
+  const { tipo, gastos } = parseCsvNubank(content)
 
-  // A fatura do cartão atravessa meses: compras de março aparecem na fatura
-  // que é paga em abril. Então, no import de crédito, mantemos todas as compras
-  // da fatura e reatribuímos ao mês de referência (o mês em que o usuário paga).
-  // Para Pix/débito, ainda filtramos pelo mês atual, pois cada transação é paga
-  // na hora.
-  const { inicio, fim } = getMesAtual()
-  let gastos: GastoParseado[]
-  let ignoradosOutroMes: number
-
-  if (tipo === 'credito') {
-    // Descarta apenas compras futuras (datas >= fim do mês atual). Compras
-    // anteriores ao início do mês são remapeadas para o primeiro dia do mês
-    // de referência.
-    const dentroDaFatura = todos.filter(g => g.data < fim)
-    gastos = dentroDaFatura.map(g =>
-      g.data < inicio ? { ...g, data: inicio } : g
-    )
-    ignoradosOutroMes = todos.length - dentroDaFatura.length
-  } else {
-    gastos = todos.filter(g => g.data >= inicio && g.data < fim)
-    ignoradosOutroMes = todos.length - gastos.length
-  }
+  const mesReferenciaSugerido = sugerirMesReferencia(gastos)
+  const mesesDistintos = contarMesesDistintos(gastos)
+  const aviso = mesesDistintos >= 3
+    ? `O arquivo abrange ${mesesDistintos} meses diferentes. Confirme o mês de referência.`
+    : undefined
 
   const acc: Record<string, CategoriaSummary> = {}
   for (const g of gastos) {
@@ -61,7 +61,13 @@ export async function parseFile(file: File): Promise<PreviewImport> {
   const porCategoria = Object.values(acc).sort((a, b) => b.total - a.total)
   const totalGeral = gastos.reduce((sum, g) => sum + g.valor, 0)
 
-  return { gastos, porCategoria, totalGeral, ignoradosOutroMes }
+  return { tipo, gastos, porCategoria, totalGeral, mesReferenciaSugerido, mesesDistintos, aviso }
+}
+
+interface ImportarArgs {
+  gastos: GastoParseado[]
+  mesReferencia: string // YYYY-MM-01
+  substituir?: boolean
 }
 
 export function useImportarCsv() {
@@ -70,16 +76,14 @@ export function useImportarCsv() {
   const { data: correcoes } = useCorrecoesCategorias()
 
   const importar = useMutation({
-    mutationFn: async ({ gastos, substituir = false }: { gastos: GastoParseado[]; substituir?: boolean }) => {
+    mutationFn: async ({ gastos, mesReferencia, substituir = false }: ImportarArgs) => {
       if (substituir) {
-        const { inicio, fim } = getMesAtual()
         const { error: errDelete } = await supabase
           .from('gastos')
           .delete()
           .eq('user_id', user!.id)
           .eq('origem', 'csv')
-          .gte('data', inicio)
-          .lt('data', fim)
+          .eq('mes_referencia', mesReferencia)
         if (errDelete) throw errDelete
       }
 
@@ -90,6 +94,7 @@ export function useImportarCsv() {
           titulo: g.titulo,
           categoria: categorizar(g.titulo, correcoes),
           data: g.data,
+          mes_referencia: mesReferencia,
           origem: 'csv',
           hash: await hashGasto(user!.id, g.data, g.titulo, g.valor),
         }))
@@ -101,10 +106,16 @@ export function useImportarCsv() {
 
       if (error) throw error
     },
-    onSuccess: (_data, { gastos, substituir }) => {
+    onSuccess: (_data, { gastos, mesReferencia, substituir }) => {
       queryClient.invalidateQueries({ queryKey: ['gastos'] })
       queryClient.invalidateQueries({ queryKey: ['gastos-historico'] })
-      track('gasto_importado', { quantidade: gastos.length, substituiu: substituir ?? false })
+      const mesAtual = `${mesAtualIso()}-01`
+      track('gasto_importado', {
+        quantidade: gastos.length,
+        substituiu: substituir ?? false,
+        mes_referencia: mesReferencia,
+        mes_referencia_diferente_do_atual: mesReferencia !== mesAtual,
+      })
     },
   })
 

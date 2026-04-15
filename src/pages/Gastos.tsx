@@ -55,9 +55,9 @@ export default function Gastos() {
     fileInputRef.current?.click()
   }
 
-  function handleConfirmarImport(substituir: boolean) {
+  function handleConfirmarImport(mesReferencia: string, substituir: boolean) {
     if (!preview) return
-    importar.mutate({ gastos: preview.gastos, substituir }, {
+    importar.mutate({ gastos: preview.gastos, mesReferencia, substituir }, {
       onSuccess: () => {
         setEstadoImport('idle')
         setPreview(null)

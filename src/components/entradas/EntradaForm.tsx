@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAdicionarEntrada } from '../../hooks/useAdicionarEntrada'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
+import { normalizarMesReferencia } from '../../lib/datas'
+import SeletorMesInline from '../shared/SeletorMesInline'
 
 function hojeISO(): string {
   return new Date().toISOString().split('T')[0]
@@ -11,8 +13,23 @@ export default function EntradaForm() {
   const [valor, setValor] = useState('')
   const [fonte, setFonte] = useState('')
   const [data, setData] = useState(hojeISO())
+  const [mesReferencia, setMesReferencia] = useState(() => normalizarMesReferencia(hojeISO()))
+  // Auto-sync: quando o usuário muda a data e não mexeu manualmente no mês,
+  // o mês de referência acompanha. Depois que ele mexe manualmente, paramos
+  // de sobrescrever.
+  const [mesManual, setMesManual] = useState(false)
   const { mutate: adicionar, isPending } = useAdicionarEntrada()
   const isOnline = useOnlineStatus()
+
+  function handleDataChange(novaData: string) {
+    setData(novaData)
+    if (!mesManual) setMesReferencia(normalizarMesReferencia(novaData))
+  }
+
+  function handleMesChange(novo: string) {
+    setMesReferencia(novo)
+    setMesManual(true)
+  }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -20,12 +37,14 @@ export default function EntradaForm() {
     if (isNaN(valorNum) || valorNum <= 0 || !fonte.trim()) return
 
     adicionar(
-      { valor: valorNum, fonte: fonte.trim(), data },
+      { valor: valorNum, fonte: fonte.trim(), data, mes_referencia: mesReferencia },
       {
         onSuccess: () => {
           setValor('')
           setFonte('')
           setData(hojeISO())
+          setMesReferencia(normalizarMesReferencia(hojeISO()))
+          setMesManual(false)
         },
       }
     )
@@ -64,15 +83,24 @@ export default function EntradaForm() {
       </div>
 
       {/* Data */}
-      <div className="bg-slate-900 rounded-2xl px-5 py-4 mb-4 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+      <div className="bg-slate-900 rounded-2xl px-5 py-4 mb-3 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
         <p className="text-xs text-slate-600 mb-1">Data</p>
         <input
           type="date"
           value={data}
-          onChange={e => setData(e.target.value)}
+          onChange={e => handleDataChange(e.target.value)}
           required
           disabled={!isOnline}
           className="w-full bg-transparent text-base text-slate-200 focus:outline-none disabled:opacity-40"
+        />
+      </div>
+
+      {/* Mês de referência */}
+      <div className="mb-4">
+        <SeletorMesInline
+          data={data}
+          mesReferencia={mesReferencia}
+          onChange={handleMesChange}
         />
       </div>
 

@@ -3,6 +3,8 @@ import type { Entrada } from '../../types'
 import { formatBRL, formatData } from '../../lib/fmt'
 import { useEditarEntrada } from '../../hooks/useEditarEntrada'
 import { useRemoverEntrada } from '../../hooks/useRemoverEntrada'
+import { normalizarMesReferencia } from '../../lib/datas'
+import SeletorMesInline from '../shared/SeletorMesInline'
 
 interface Props {
   entradas: Entrada[]
@@ -14,6 +16,14 @@ interface EntradaEditandoState {
   valor: string
   fonte: string
   data: string
+  mes_referencia: string
+}
+
+const NOMES_MES_CURTO = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']
+
+function labelMesCurto(mesReferencia: string): string {
+  const [, m] = mesReferencia.split('-').map(Number)
+  return NOMES_MES_CURTO[m - 1]
 }
 
 function EntradaItem({ entrada }: { entrada: Entrada }) {
@@ -23,21 +33,53 @@ function EntradaItem({ entrada }: { entrada: Entrada }) {
     valor: String(entrada.valor),
     fonte: entrada.fonte,
     data: entrada.data,
+    mes_referencia: entrada.mes_referencia,
   })
+  const [mesManual, setMesManual] = useState(
+    entrada.mes_referencia !== normalizarMesReferencia(entrada.data)
+  )
   const { mutate: editar, isPending: salvando } = useEditarEntrada()
   const { mutate: remover, isPending: removendo } = useRemoverEntrada()
+
+  const divergente = entrada.mes_referencia !== normalizarMesReferencia(entrada.data)
+
+  function handleDataChange(novaData: string) {
+    setForm(f => ({
+      ...f,
+      data: novaData,
+      mes_referencia: mesManual ? f.mes_referencia : normalizarMesReferencia(novaData),
+    }))
+  }
+
+  function handleMesChange(novo: string) {
+    setForm(f => ({ ...f, mes_referencia: novo }))
+    setMesManual(true)
+  }
 
   function salvar() {
     const valorNum = parseFloat(form.valor.replace(',', '.'))
     if (isNaN(valorNum) || valorNum <= 0 || !form.fonte.trim()) return
     editar(
-      { id: entrada.id, valor: valorNum, fonte: form.fonte.trim(), data: form.data },
+      {
+        id: entrada.id,
+        valor: valorNum,
+        fonte: form.fonte.trim(),
+        data: form.data,
+        mes_referencia: form.mes_referencia,
+      },
       { onSuccess: () => setEditando(false) }
     )
   }
 
   function cancelar() {
-    setForm({ id: entrada.id, valor: String(entrada.valor), fonte: entrada.fonte, data: entrada.data })
+    setForm({
+      id: entrada.id,
+      valor: String(entrada.valor),
+      fonte: entrada.fonte,
+      data: entrada.data,
+      mes_referencia: entrada.mes_referencia,
+    })
+    setMesManual(entrada.mes_referencia !== normalizarMesReferencia(entrada.data))
     setEditando(false)
   }
 
@@ -64,10 +106,15 @@ function EntradaItem({ entrada }: { entrada: Entrada }) {
           <input
             type="date"
             value={form.data}
-            onChange={e => setForm(f => ({ ...f, data: e.target.value }))}
+            onChange={e => handleDataChange(e.target.value)}
             className="bg-slate-950 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none"
           />
         </div>
+        <SeletorMesInline
+          data={form.data}
+          mesReferencia={form.mes_referencia}
+          onChange={handleMesChange}
+        />
         <div className="flex gap-2">
           <button
             onClick={salvar}
@@ -101,7 +148,12 @@ function EntradaItem({ entrada }: { entrada: Entrada }) {
     >
       <div className="text-left">
         <p className="text-sm font-medium text-slate-200">{entrada.fonte}</p>
-        <p className="text-xs text-slate-500 mt-0.5">{formatData(entrada.data)}</p>
+        <p className="text-xs text-slate-500 mt-0.5">
+          {formatData(entrada.data)}
+          {divergente && (
+            <span className="text-amber-400/80"> · conta em {labelMesCurto(entrada.mes_referencia)}</span>
+          )}
+        </p>
       </div>
       <div className="flex items-center gap-2">
         <p className="text-sm font-bold text-emerald-400">{formatBRL(entrada.valor)}</p>

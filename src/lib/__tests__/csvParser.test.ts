@@ -134,6 +134,45 @@ describe('parseCsvNubank — Pix formato real Nubank', () => {
   })
 })
 
+describe('parseCsvNubank — regressão fatura (abril/2026)', () => {
+  // CSV real do Nubank com pagamentos de fatura que não devem contar como gastos.
+  const PIX_ABRIL = `Data,Valor,Identificador,Descrição
+02/04/2026,640.00,x1,Resgate RDB
+02/04/2026,-580.86,x2,Pagamento de fatura
+02/04/2026,-59.14,x3,Aplicação RDB
+13/04/2026,437.46,x4,Resgate RDB
+13/04/2026,-437.46,x5,Pagamento de fatura
+05/04/2026,-32.90,x6,Transferência enviada pelo Pix - IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A. - 14.380.200/0001-21 - ADYEN`
+
+  it('não inclui "Pagamento de fatura" como gasto', () => {
+    const { gastos } = parseCsvNubank(PIX_ABRIL)
+    expect(gastos.find(g => g.titulo.toLowerCase().includes('fatura'))).toBeUndefined()
+  })
+
+  it('não inclui Aplicação RDB nem Resgate RDB', () => {
+    const { gastos } = parseCsvNubank(PIX_ABRIL)
+    expect(gastos.find(g => g.titulo.toLowerCase().includes('rdb'))).toBeUndefined()
+  })
+
+  it('mantém apenas o pix real (ifood)', () => {
+    const { gastos } = parseCsvNubank(PIX_ABRIL)
+    expect(gastos).toHaveLength(1)
+    expect(gastos[0].valor).toBe(32.90)
+  })
+
+  const CREDITO_ABRIL = `date,title,amount
+2026-04-13,Pagamento recebido,-437.46
+2026-04-02,Pagamento recebido,-580.86
+2026-04-14,Supermercados Imperatr,14.58
+2026-04-13,Pantanal Auto Posto,16.00`
+
+  it('credit CSV não inclui "Pagamento recebido" (valor negativo)', () => {
+    const { gastos } = parseCsvNubank(CREDITO_ABRIL)
+    expect(gastos.find(g => g.titulo.toLowerCase().includes('pagamento'))).toBeUndefined()
+    expect(gastos).toHaveLength(2)
+  })
+})
+
 describe('parseCsvNubank — edge cases', () => {
   it('retorna lista vazia para CSV sem linhas de dados', () => {
     const { gastos } = parseCsvNubank('date,title,amount\n')

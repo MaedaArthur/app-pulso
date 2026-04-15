@@ -12,6 +12,7 @@ export interface Perfil {
   onboarding_completo: boolean
   dica_csv_vista: boolean
   tutorial_visto: boolean
+  banner_mes_referencia_visto: boolean
   created_at: string
 }
 
@@ -21,6 +22,7 @@ export interface Entrada {
   valor: number
   fonte: string
   data: string
+  mes_referencia: string
   created_at: string
 }
 
@@ -31,6 +33,7 @@ export interface Gasto {
   titulo: string
   categoria: string
   data: string
+  mes_referencia: string
   origem: string
   hash: string
   created_at: string
