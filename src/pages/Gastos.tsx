@@ -10,6 +10,7 @@ import CsvTutorialModal from '../components/gastos/CsvTutorialModal'
 import CsvImportSheet from '../components/gastos/CsvImportSheet'
 import CategoriaCard from '../components/gastos/CategoriaCard'
 import GerenciarCategoriasSheet from '../components/gastos/GerenciarCategoriasSheet'
+import GastoForm from '../components/gastos/GastoForm'
 
 type EstadoImport = 'idle' | 'tutorial' | 'preview'
 
@@ -122,6 +123,8 @@ export default function Gastos() {
         onChange={handleFileChange}
         className="hidden"
       />
+
+      <GastoForm />
 
       {!isLoading && grupos.length === 0 && (
         <div className="bg-slate-900 rounded-2xl p-8 text-center">
