@@ -7,6 +7,7 @@ import { useTour } from '../contexts/TourContext'
 import { supabase } from '../lib/supabase'
 import { diasPassadosNoMes, diasTotaisDoMes } from '../lib/datas'
 import SeletorMes from '../components/layout/SeletorMes'
+import BannerMesReferencia from '../components/home/BannerMesReferencia'
 import HeroStatus from '../components/home/HeroStatus'
 import RitmoDoMes from '../components/home/RitmoDoMes'
 import ResumoEntradaGasto from '../components/home/ResumoEntradaGasto'
@@ -65,7 +66,10 @@ export default function Home() {
     metaPoupancaMensal,
     projecaoMeta,
     isLoading,
+    isMesAtual,
   } = useSaldo()
+
+  const mostrarBannerMesRef = isMesAtual && perfil?.banner_mes_referencia_visto === false
 
   const { iniciar } = useTour()
 
@@ -91,6 +95,8 @@ export default function Home() {
       {import.meta.env.DEV && <DevTools />}
 
       <SeletorMes />
+
+      {mostrarBannerMesRef && <BannerMesReferencia />}
 
       <HeroStatus
         nome={perfil?.nome ?? null}

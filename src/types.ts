@@ -12,6 +12,7 @@ export interface Perfil {
   onboarding_completo: boolean
   dica_csv_vista: boolean
   tutorial_visto: boolean
+  banner_mes_referencia_visto: boolean
   created_at: string
 }
 
