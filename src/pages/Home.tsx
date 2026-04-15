@@ -100,13 +100,15 @@ export default function Home() {
 
       {projecaoMeta && <MetaCard projecao={projecaoMeta} />}
 
-      <RitmoDoMes
-        ritmo={ritmo}
-        estado={estado}
-        totalGastos={totalGastos}
-        diasPassados={diasPassadosNoMes()}
-        diasTotais={diasTotaisDoMes()}
-      />
+      {ritmo && (
+        <RitmoDoMes
+          ritmo={ritmo}
+          estado={estado}
+          totalGastos={totalGastos}
+          diasPassados={diasPassadosNoMes()}
+          diasTotais={diasTotaisDoMes()}
+        />
+      )}
 
       {saudeReserva && (
         <ReservaCard saude={saudeReserva} reservaTotal={reservaTotal} />
