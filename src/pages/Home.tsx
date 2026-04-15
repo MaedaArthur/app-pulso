@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useTour } from '../contexts/TourContext'
 import { supabase } from '../lib/supabase'
 import { diasPassadosNoMes, diasTotaisDoMes } from '../lib/datas'
+import SeletorMes from '../components/layout/SeletorMes'
 import HeroStatus from '../components/home/HeroStatus'
 import RitmoDoMes from '../components/home/RitmoDoMes'
 import ResumoEntradaGasto from '../components/home/ResumoEntradaGasto'
@@ -88,6 +89,8 @@ export default function Home() {
   return (
     <div className="p-4">
       {import.meta.env.DEV && <DevTools />}
+
+      <SeletorMes />
 
       <HeroStatus
         nome={perfil?.nome ?? null}
