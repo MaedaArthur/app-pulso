@@ -4,6 +4,7 @@ import type { GastosPorCategoria } from '../../hooks/useSaldo'
 import { TODAS_CATEGORIAS } from '../../lib/categories'
 import { useAtualizarCategoriaGasto, useSalvarCorrecao, useCategoriasCustom } from '../../hooks/useCategorias'
 import { useEditarMesGasto } from '../../hooks/useEditarMesGasto'
+import { useRemoverGasto } from '../../hooks/useRemoverGasto'
 import { useEmojis } from '../../hooks/useEmojis'
 import { normalizarMerchant } from '../../lib/categories'
 import { normalizarMesReferencia } from '../../lib/datas'
@@ -54,6 +55,8 @@ function ItemGasto({ gasto }: ItemGastoProps) {
   const { mutate: atualizarGasto, isPending } = useAtualizarCategoriaGasto()
   const { mutate: salvarCorrecao } = useSalvarCorrecao()
   const { mutate: editarMes, isPending: salvandoMes } = useEditarMesGasto()
+  const { mutate: removerGasto, isPending: removendoGasto } = useRemoverGasto()
+  const [confirmandoRemover, setConfirmandoRemover] = useState(false)
   const { data: categoriasCustom, criar: criarCategoriaCustom } = useCategoriasCustom()
   const { getEmoji } = useEmojis()
 
@@ -196,6 +199,33 @@ function ItemGasto({ gasto }: ItemGastoProps) {
               + nova categoria
             </button>
           )}
+          </div>
+
+          <div className="pt-2 border-t border-slate-800/50">
+            {confirmandoRemover ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => removerGasto(gasto.id)}
+                  disabled={removendoGasto}
+                  className="flex-1 text-xs bg-red-900 hover:bg-red-800 disabled:opacity-50 rounded-lg py-2 text-red-200 transition-colors"
+                >
+                  {removendoGasto ? 'Apagando...' : 'Confirmar apagar'}
+                </button>
+                <button
+                  onClick={() => setConfirmandoRemover(false)}
+                  className="text-xs bg-slate-800 hover:bg-slate-700 rounded-lg px-3 py-2 text-slate-400 transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmandoRemover(true)}
+                className="text-xs text-red-400/80 hover:text-red-400 transition-colors"
+              >
+                🗑️ apagar gasto
+              </button>
+            )}
           </div>
         </div>
       )}
