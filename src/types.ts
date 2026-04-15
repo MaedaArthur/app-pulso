@@ -21,6 +21,7 @@ export interface Entrada {
   valor: number
   fonte: string
   data: string
+  mes_referencia: string
   created_at: string
 }
 
@@ -31,6 +32,7 @@ export interface Gasto {
   titulo: string
   categoria: string
   data: string
+  mes_referencia: string
   origem: string
   hash: string
   created_at: string
