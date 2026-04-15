@@ -25,7 +25,7 @@ export default function BannerMesReferencia({ onFechar }: Props) {
         ✨ Agora você pode ver gastos mês a mês
       </p>
       <p className="text-xs text-indigo-200/80 leading-relaxed mb-3">
-        Faturas de cartão antigas podem estar no mês errado pela regra nova — a fatura conta no mês em que você a paga.
+        Faturas de cartão antigas podem estar no mês errado pela regra nova, a fatura conta no mês em que você a paga.
         Se quiser precisão, reimporte as faturas dos últimos meses escolhendo o mês de pagamento no dropdown.
         Imports novos já acertam sozinhos.
       </p>

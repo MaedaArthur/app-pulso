@@ -36,11 +36,22 @@ function DevTools() {
     navigate('/onboarding', { replace: true })
   }
 
+  async function resetarBannerMesRef() {
+    await supabase
+      .from('perfis')
+      .update({ banner_mes_referencia_visto: false })
+      .eq('id', user!.id)
+    queryClient.invalidateQueries({ queryKey: ['perfil'] })
+  }
+
   return (
     <div className="border border-dashed border-slate-700 rounded-xl p-3 mb-4 space-y-2">
       <p className="text-xs text-slate-600 font-mono uppercase tracking-wide">dev</p>
       <button onClick={resetarOnboarding} className="w-full text-sm bg-slate-800 hover:bg-slate-700 rounded-lg py-2 text-yellow-400 transition-colors">
         ↺ Resetar onboarding
+      </button>
+      <button onClick={resetarBannerMesRef} className="w-full text-sm bg-slate-800 hover:bg-slate-700 rounded-lg py-2 text-indigo-400 transition-colors">
+        ↺ Mostrar banner mês de referência
       </button>
       <button onClick={signOut} className="w-full text-sm bg-slate-800 hover:bg-slate-700 rounded-lg py-2 text-red-400 transition-colors">
         → Sair da conta
