@@ -3,9 +3,18 @@ import type { Categoria, Gasto } from '../../types'
 import type { GastosPorCategoria } from '../../hooks/useSaldo'
 import { TODAS_CATEGORIAS } from '../../lib/categories'
 import { useAtualizarCategoriaGasto, useSalvarCorrecao, useCategoriasCustom } from '../../hooks/useCategorias'
+import { useEditarMesGasto } from '../../hooks/useEditarMesGasto'
 import { useEmojis } from '../../hooks/useEmojis'
 import { normalizarMerchant } from '../../lib/categories'
+import { normalizarMesReferencia } from '../../lib/datas'
 import { formatBRL, formatDataCurta } from '../../lib/fmt'
+import SeletorMesInline from '../shared/SeletorMesInline'
+
+const NOMES_MES_CURTO = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']
+function labelMesCurto(mesReferencia: string): string {
+  const [, m] = mesReferencia.split('-').map(Number)
+  return NOMES_MES_CURTO[m - 1]
+}
 
 const EMOJIS_CRIACAO = [
   '🏷️','🍔','🍕','🍣','🥗','🛒','☕','🍺',
@@ -44,8 +53,16 @@ function ItemGasto({ gasto }: ItemGastoProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const { mutate: atualizarGasto, isPending } = useAtualizarCategoriaGasto()
   const { mutate: salvarCorrecao } = useSalvarCorrecao()
+  const { mutate: editarMes, isPending: salvandoMes } = useEditarMesGasto()
   const { data: categoriasCustom, criar: criarCategoriaCustom } = useCategoriasCustom()
   const { getEmoji } = useEmojis()
+
+  const divergente = gasto.mes_referencia !== normalizarMesReferencia(gasto.data)
+
+  function handleMesChange(novo: string) {
+    if (novo === gasto.mes_referencia) return
+    editarMes({ id: gasto.id, mes_referencia: novo })
+  }
 
   function handleSelecionarCategoria(cat: Categoria) {
     if (cat === gasto.categoria) {
@@ -90,7 +107,12 @@ function ItemGasto({ gasto }: ItemGastoProps) {
       >
         <div className="flex-1 min-w-0 mr-3">
           <p className="text-xs text-slate-300 truncate">{gasto.titulo}</p>
-          <p className="text-xs text-slate-600 mt-0.5">{formatDataCurta(gasto.data)}</p>
+          <p className="text-xs text-slate-600 mt-0.5">
+            {formatDataCurta(gasto.data)}
+            {divergente && (
+              <span className="text-amber-400/80"> · conta em {labelMesCurto(gasto.mes_referencia)}</span>
+            )}
+          </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <p className="text-xs font-semibold text-red-400">{formatBRL(gasto.valor)}</p>
@@ -99,7 +121,18 @@ function ItemGasto({ gasto }: ItemGastoProps) {
       </button>
 
       {editandoCategoria && (
-        <div className="px-4 pb-3 flex flex-wrap gap-1.5">
+        <div className="px-4 pb-3 space-y-3">
+          <div className="pt-1">
+            <SeletorMesInline
+              data={gasto.data}
+              mesReferencia={gasto.mes_referencia}
+              onChange={handleMesChange}
+            />
+            {salvandoMes && (
+              <p className="text-[10px] text-slate-500 mt-1">Salvando mês...</p>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
           {todasCategorias.map(cat => (
             <button
               key={cat}
@@ -163,6 +196,7 @@ function ItemGasto({ gasto }: ItemGastoProps) {
               + nova categoria
             </button>
           )}
+          </div>
         </div>
       )}
     </div>
