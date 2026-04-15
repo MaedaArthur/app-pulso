@@ -6,6 +6,7 @@ import { useTour } from '../contexts/TourContext'
 import { useWhatsNewContext } from '../contexts/WhatsNewContext'
 import ReportSheet from '../components/config/ReportSheet'
 import CampoEditavel from '../components/config/CampoEditavel'
+import ChangelogHistoricoSheet from '../components/shared/ChangelogHistoricoSheet'
 import type { Perfil } from '../types'
 
 const COMO_RECEBE = ['💼 Salário fixo', '🎨 Freela', '🛵 Plataforma', '🎓 Bolsa', '+ Outro']
@@ -90,6 +91,7 @@ export default function Config() {
   const { iniciar } = useTour()
   const { forcarAbrir: abrirWhatsNew } = useWhatsNewContext()
   const [reportAberto, setReportAberto] = useState(false)
+  const [historicoAberto, setHistoricoAberto] = useState(false)
 
   const [comoRecebe, setComoRecebe] = useState<string[]>([])
   const [ondeGuarda, setOndeGuarda] = useState<string[]>([])
@@ -265,12 +267,22 @@ export default function Config() {
             </button>
             <button
               onClick={abrirWhatsNew}
-              className="w-full px-4 py-3 text-left text-sm text-slate-400 hover:bg-slate-800 transition-colors"
+              className="w-full px-4 py-3 text-left text-sm text-slate-400 hover:bg-slate-800 transition-colors border-b border-slate-800"
             >
               🎉 Ver novidades
             </button>
+            <button
+              onClick={() => setHistoricoAberto(true)}
+              className="w-full px-4 py-3 text-left text-sm text-slate-400 hover:bg-slate-800 transition-colors"
+            >
+              📜 Histórico de novidades
+            </button>
           </div>
         </div>
+      )}
+
+      {historicoAberto && (
+        <ChangelogHistoricoSheet onFechar={() => setHistoricoAberto(false)} />
       )}
     </div>
   )
